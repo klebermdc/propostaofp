@@ -14,16 +14,184 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quote_items: {
+        Row: {
+          created_at: string
+          description: string
+          end_date: string | null
+          id: string
+          item_type: Database["public"]["Enums"]["quote_item_type"]
+          metadata: Json | null
+          observations: string | null
+          quantity: number
+          quote_id: string
+          sort_order: number
+          start_date: string | null
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          end_date?: string | null
+          id?: string
+          item_type?: Database["public"]["Enums"]["quote_item_type"]
+          metadata?: Json | null
+          observations?: string | null
+          quantity?: number
+          quote_id: string
+          sort_order?: number
+          start_date?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          id?: string
+          item_type?: Database["public"]["Enums"]["quote_item_type"]
+          metadata?: Json | null
+          observations?: string | null
+          quantity?: number
+          quote_id?: string
+          sort_order?: number
+          start_date?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          agent_id: string
+          client_email: string | null
+          client_name: string | null
+          client_phone: string | null
+          created_at: string
+          currency: string
+          discount: number
+          id: string
+          notes: string | null
+          share_token: string
+          status: Database["public"]["Enums"]["quote_status"]
+          title: string
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          agent_id: string
+          client_email?: string | null
+          client_name?: string | null
+          client_phone?: string | null
+          created_at?: string
+          currency?: string
+          discount?: number
+          id?: string
+          notes?: string | null
+          share_token?: string
+          status?: Database["public"]["Enums"]["quote_status"]
+          title?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          agent_id?: string
+          client_email?: string | null
+          client_name?: string | null
+          client_phone?: string | null
+          created_at?: string
+          currency?: string
+          discount?: number
+          id?: string
+          notes?: string | null
+          share_token?: string
+          status?: Database["public"]["Enums"]["quote_status"]
+          title?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "agent"
+      quote_item_type:
+        | "hotel"
+        | "flight"
+        | "transfer"
+        | "tour"
+        | "insurance"
+        | "other"
+      quote_status: "draft" | "sent" | "accepted" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +318,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "agent"],
+      quote_item_type: [
+        "hotel",
+        "flight",
+        "transfer",
+        "tour",
+        "insurance",
+        "other",
+      ],
+      quote_status: ["draft", "sent", "accepted", "expired"],
+    },
   },
 } as const
