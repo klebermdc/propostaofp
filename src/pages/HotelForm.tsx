@@ -96,6 +96,10 @@ export default function HotelForm() {
   const [urlInput, setUrlInput] = useState("");
   const [legendaInput, setLegendaInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [searchResults, setSearchResults] = useState<{ url: string; thumbnail: string; title: string }[]>([]);
+  const [selectedResults, setSelectedResults] = useState<Set<number>>(new Set());
+  const [searching, setSearching] = useState(false);
+  const [savingSelected, setSavingSelected] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
