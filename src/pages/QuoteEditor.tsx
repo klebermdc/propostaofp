@@ -421,6 +421,14 @@ export default function QuoteEditor() {
                         onSelect={(hotelId) => selectHotelForItem(item.id, hotelId)}
                       />
                     )}
+                    {/* Ticket selector - shown when type is ticket */}
+                    {item.item_type === "ticket" && tickets.length > 0 && (
+                      <TicketSelector
+                        tickets={tickets}
+                        selectedTicketId={(item.metadata as any)?.ticket_id || null}
+                        onSelect={(ticketId) => selectTicketForItem(item.id, ticketId)}
+                      />
+                    )}
                     <Input
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
