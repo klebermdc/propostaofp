@@ -100,7 +100,9 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
       if (error) throw error;
 
       if (data?.items && data.items.length > 0) {
-        setExtractedItems(data.items);
+        // Try to match extracted items against the ingressos_orlando table to fill prices
+        const enrichedItems = await enrichWithDatabasePrices(data.items);
+        setExtractedItems(enrichedItems);
         setStep("preview");
       } else {
         toast({
