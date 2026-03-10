@@ -515,6 +515,16 @@ export default function QuoteEditor() {
                 onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Parcelas (nº de vezes)</Label>
+              <Input
+                type="number"
+                min={1}
+                max={24}
+                value={installmentCount}
+                onChange={(e) => setInstallmentCount(parseInt(e.target.value) || 10)}
+              />
+            </div>
             <div className="space-y-2 sm:col-span-2">
               <Label>Notas gerais</Label>
               <Textarea
