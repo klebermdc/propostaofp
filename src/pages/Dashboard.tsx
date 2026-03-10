@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, Plane, LogOut, FileText, Clock, CheckCircle, Send, Hotel } from "lucide-react";
+import { Plus, Search, Plane, LogOut, FileText, Clock, CheckCircle, Send, Hotel, Ticket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 
