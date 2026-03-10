@@ -162,7 +162,6 @@ export default function PublicQuote() {
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-white leading-snug">
             Proposta Mágica ✨
           </h1>
-          </h1>
           {quote.client_name && (
             <p className="mt-1.5 text-sm text-white/80">
               Preparada para <span className="font-semibold text-white">{quote.client_name}</span>
