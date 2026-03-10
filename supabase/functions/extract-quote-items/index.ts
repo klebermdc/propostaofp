@@ -21,31 +21,42 @@ serve(async (req) => {
     // If cart_url is provided, fetch the page HTML and send as text
     if (cart_url) {
       // The user may paste the URL with extra text (product info) after it
-      const decoded = decodeURIComponent(cart_url);
+      let decoded: string;
+      try {
+        decoded = decodeURIComponent(cart_url);
+      } catch {
+        decoded = cart_url; // Already decoded or plain text
+      }
       const lines = decoded.split('\n').map((l: string) => l.trim()).filter(Boolean);
-      const actualUrl = lines[0]; // First line is the URL
-      const extraText = lines.slice(1).join('\n'); // Remaining lines are product info
+      
+      // First line might be a URL, or everything might be plain text
+      const firstLine = lines[0];
+      const isUrl = firstLine.startsWith('http://') || firstLine.startsWith('https://');
+      const actualUrl = isUrl ? firstLine : null;
+      const extraText = isUrl ? lines.slice(1).join('\n') : lines.join('\n');
 
       console.log("Cart URL:", actualUrl);
       console.log("Extra text:", extraText);
 
       let pageHtml = "";
-      try {
-        const pageResponse = await fetch(actualUrl, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
-          },
-        });
-        if (pageResponse.ok) {
-          pageHtml = await pageResponse.text();
-          console.log("Page HTML length:", pageHtml.length);
-        } else {
-          console.log("Page fetch failed:", pageResponse.status, "- using extra text only");
+      if (actualUrl) {
+        try {
+          const pageResponse = await fetch(actualUrl, {
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+            },
+          });
+          if (pageResponse.ok) {
+            pageHtml = await pageResponse.text();
+            console.log("Page HTML length:", pageHtml.length);
+          } else {
+            console.log("Page fetch failed:", pageResponse.status, "- using extra text only");
+          }
+        } catch (e) {
+          console.log("Page fetch error:", e, "- using extra text only");
         }
-      } catch (e) {
-        console.log("Page fetch error:", e, "- using extra text only");
       }
 
       const contextParts: string[] = [];
