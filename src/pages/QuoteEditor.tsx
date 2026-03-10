@@ -205,6 +205,7 @@ export default function QuoteEditor() {
     setNotes(q.notes || "");
     setValidUntil(q.valid_until || "");
     setDiscount(q.discount);
+    setInstallmentCount((q as any).installment_count ?? 10);
     setItems(itemsRes.data || []);
     setLoading(false);
   };
