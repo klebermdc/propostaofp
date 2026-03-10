@@ -320,9 +320,15 @@ export default function PublicQuote() {
               )}
               <Separator />
               <div className="flex justify-between text-xl font-bold">
-                <span>Total</span>
+                <span>Total à vista</span>
                 <span className="text-primary">R$ {total.toFixed(2)}</span>
               </div>
+              {(quote as any).installment_count > 1 && total > 0 && (
+                <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                  <span>ou parcelado em {(quote as any).installment_count}x</span>
+                  <span>R$ {(total / (quote as any).installment_count).toFixed(2)}/mês</span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
