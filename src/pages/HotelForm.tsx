@@ -14,7 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, Hotel, Upload, Trash2, Star, ImagePlus, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, Save, Hotel, Upload, Trash2, Star, ImagePlus, Link as LinkIcon, SearchIcon, Check, Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
 const MARCAS = ["Hilton", "Marriott", "Rosen", "Disney", "Universal", "Independente", "Outra"];
