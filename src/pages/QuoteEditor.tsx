@@ -50,6 +50,7 @@ import {
   Copy,
   Sparkles,
   Hotel,
+  Ticket,
   ChevronsUpDown,
   Check,
 } from "lucide-react";
@@ -76,6 +77,18 @@ type HotelOption = {
   cover_url?: string;
 };
 
+type TicketOption = {
+  id: number;
+  nome_ingresso: string;
+  grupo: string;
+  categoria: string | null;
+  dias_validade: number | null;
+  inclui_refeicao: boolean | null;
+  preco_adulto: number | null;
+  preco_crianca: number | null;
+  observacoes: string | null;
+};
+
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -89,6 +102,7 @@ export default function QuoteEditor() {
   const [showAI, setShowAI] = useState(false);
   const [hotels, setHotels] = useState<HotelOption[]>([]);
   const [hotelCovers, setHotelCovers] = useState<Record<number, string>>({});
+  const [tickets, setTickets] = useState<TicketOption[]>([]);
 
   // Form fields
   const [title, setTitle] = useState("");
@@ -102,6 +116,7 @@ export default function QuoteEditor() {
   useEffect(() => {
     if (id) fetchQuote();
     fetchHotels();
+    fetchTickets();
   }, [id]);
 
   const fetchHotels = async () => {
@@ -117,6 +132,36 @@ export default function QuoteEditor() {
       for (const f of coversRes.data as any[]) covers[f.hotel_id] = f.url;
       setHotelCovers(covers);
     }
+  };
+
+  const fetchTickets = async () => {
+    const { data } = await supabase
+      .from("ingressos_orlando")
+      .select("id, nome_ingresso, grupo, categoria, dias_validade, inclui_refeicao, preco_adulto, preco_crianca, observacoes")
+      .order("grupo")
+      .order("nome_ingresso");
+    if (data) setTickets(data as unknown as TicketOption[]);
+  };
+
+  const selectTicketForItem = (itemId: string, ticketId: number) => {
+    const ticket = tickets.find((t) => t.id === ticketId);
+    if (!ticket) return;
+    const details = [
+      ticket.grupo && `Grupo: ${ticket.grupo}`,
+      ticket.categoria && `Categoria: ${ticket.categoria}`,
+      ticket.dias_validade && `Validade: ${ticket.dias_validade} dia(s)`,
+      ticket.inclui_refeicao ? "Refeição inclusa" : null,
+      ticket.preco_adulto && `Adulto: R$ ${ticket.preco_adulto}`,
+      ticket.preco_crianca && `Criança: R$ ${ticket.preco_crianca}`,
+    ].filter(Boolean).join(" | ");
+
+    updateItem(itemId, {
+      description: ticket.nome_ingresso,
+      item_type: "ticket" as QuoteItemType,
+      observations: details,
+      metadata: { ticket_id: ticket.id, ticket_nome: ticket.nome_ingresso } as any,
+      ...(ticket.preco_adulto ? { unit_price: Number(ticket.preco_adulto) } : {}),
+    });
   };
 
   const selectHotelForItem = (itemId: string, hotelId: number) => {
@@ -376,6 +421,14 @@ export default function QuoteEditor() {
                         onSelect={(hotelId) => selectHotelForItem(item.id, hotelId)}
                       />
                     )}
+                    {/* Ticket selector - shown when type is ticket */}
+                    {item.item_type === "ticket" && tickets.length > 0 && (
+                      <TicketSelector
+                        tickets={tickets}
+                        selectedTicketId={(item.metadata as any)?.ticket_id || null}
+                        onSelect={(ticketId) => selectTicketForItem(item.id, ticketId)}
+                      />
+                    )}
                     <Input
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
@@ -610,6 +663,74 @@ function HotelSelector({
                 </CommandItem>
               ))}
             </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function TicketSelector({
+  tickets,
+  selectedTicketId,
+  onSelect,
+}: {
+  tickets: TicketOption[];
+  selectedTicketId: number | null;
+  onSelect: (ticketId: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = tickets.find((t) => t.id === selectedTicketId);
+  const groups = [...new Set(tickets.map((t) => t.grupo))];
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between h-9 text-sm">
+          {selected ? (
+            <div className="flex items-center gap-2 truncate">
+              <Ticket className="h-3.5 w-3.5 shrink-0 text-primary" />
+              <span className="truncate">{selected.nome_ingresso}</span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{selected.grupo}</Badge>
+            </div>
+          ) : (
+            <span className="text-muted-foreground">Selecionar ingresso cadastrado...</span>
+          )}
+          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Buscar ingresso..." />
+          <CommandList>
+            <CommandEmpty>Nenhum ingresso encontrado.</CommandEmpty>
+            {groups.map((grupo) => (
+              <CommandGroup key={grupo} heading={grupo}>
+                {tickets
+                  .filter((t) => t.grupo === grupo)
+                  .map((ticket) => (
+                    <CommandItem
+                      key={ticket.id}
+                      value={`${ticket.nome_ingresso} ${ticket.grupo}`}
+                      onSelect={() => {
+                        onSelect(ticket.id);
+                        setOpen(false);
+                      }}
+                      className="flex items-center gap-3 py-2"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{ticket.nome_ingresso}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {ticket.dias_validade ? `${ticket.dias_validade} dia(s)` : ""}
+                          {ticket.preco_adulto ? ` · Adulto: R$ ${ticket.preco_adulto}` : ""}
+                          {ticket.inclui_refeicao ? " · Com refeição" : ""}
+                        </p>
+                      </div>
+                      <Check className={cn("h-4 w-4 shrink-0", selectedTicketId === ticket.id ? "opacity-100" : "opacity-0")} />
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+            ))}
           </CommandList>
         </Command>
       </PopoverContent>
