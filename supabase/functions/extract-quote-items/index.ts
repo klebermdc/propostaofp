@@ -20,36 +20,59 @@ serve(async (req) => {
 
     // If cart_url is provided, fetch the page HTML and send as text
     if (cart_url) {
-      console.log("Fetching cart URL:", cart_url);
-      const pageResponse = await fetch(cart_url, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
-        },
-      });
+      // The user may paste the URL with extra text (product info) after it
+      const decoded = decodeURIComponent(cart_url);
+      const lines = decoded.split('\n').map((l: string) => l.trim()).filter(Boolean);
+      const actualUrl = lines[0]; // First line is the URL
+      const extraText = lines.slice(1).join('\n'); // Remaining lines are product info
 
-      if (!pageResponse.ok) {
-        throw new Error(`Falha ao acessar a página: ${pageResponse.status}`);
+      console.log("Cart URL:", actualUrl);
+      console.log("Extra text:", extraText);
+
+      let pageHtml = "";
+      try {
+        const pageResponse = await fetch(actualUrl, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+          },
+        });
+        if (pageResponse.ok) {
+          pageHtml = await pageResponse.text();
+          console.log("Page HTML length:", pageHtml.length);
+        } else {
+          console.log("Page fetch failed:", pageResponse.status, "- using extra text only");
+        }
+      } catch (e) {
+        console.log("Page fetch error:", e, "- using extra text only");
       }
 
-      const pageHtml = await pageResponse.text();
-      console.log("Page HTML length:", pageHtml.length);
+      const contextParts: string[] = [];
+      if (extraText) {
+        contextParts.push(`Texto colado pelo usuário (pode conter nomes de produtos, datas, quantidades):\n${extraText}`);
+      }
+      if (pageHtml) {
+        contextParts.push(`HTML da página de checkout:\n${pageHtml.substring(0, 80000)}`);
+      }
+
+      const contextContent = contextParts.length > 0 
+        ? contextParts.join('\n\n---\n\n') 
+        : "Nenhum conteúdo disponível";
 
       contentParts.push({
         type: "text",
-        text: `Analise o HTML desta página de checkout/carrinho de um site de venda de ingressos e passeios para Orlando.
-Extraia TODOS os itens do carrinho encontrados no HTML.
+        text: `Analise o conteúdo abaixo de um carrinho/checkout de um site de venda de ingressos e passeios para Orlando.
+Extraia TODOS os itens encontrados.
 
 Para cada item, identifique:
 - Tipo de serviço (hotel, flight, transfer, tour, insurance, ticket, other) - ingressos de parques devem ser "ticket", passeios devem ser "tour"
 - Nome/descrição do produto
 - Data de uso (formato YYYY-MM-DD se disponível)
-- Valor unitário em reais (número decimal) - procure por preços no HTML
+- Valor unitário em reais (número decimal) - procure por preços. Se não encontrar, use 0.
 - Quantidade de adultos e crianças (separe como itens distintos se tiver preços diferentes)
 
-HTML da página:
-${pageHtml.substring(0, 100000)}
+${contextContent}
 
 Retorne os dados usando a função extract_items.`,
       });
