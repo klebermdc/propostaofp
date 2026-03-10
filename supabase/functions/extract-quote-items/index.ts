@@ -39,22 +39,24 @@ serve(async (req) => {
       console.log("Extra text:", extraText);
 
       let pageHtml = "";
-      try {
-        const pageResponse = await fetch(actualUrl, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
-          },
-        });
-        if (pageResponse.ok) {
-          pageHtml = await pageResponse.text();
-          console.log("Page HTML length:", pageHtml.length);
-        } else {
-          console.log("Page fetch failed:", pageResponse.status, "- using extra text only");
+      if (actualUrl) {
+        try {
+          const pageResponse = await fetch(actualUrl, {
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+            },
+          });
+          if (pageResponse.ok) {
+            pageHtml = await pageResponse.text();
+            console.log("Page HTML length:", pageHtml.length);
+          } else {
+            console.log("Page fetch failed:", pageResponse.status, "- using extra text only");
+          }
+        } catch (e) {
+          console.log("Page fetch error:", e, "- using extra text only");
         }
-      } catch (e) {
-        console.log("Page fetch error:", e, "- using extra text only");
       }
 
       const contextParts: string[] = [];
