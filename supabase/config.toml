@@ -2,3 +2,6 @@ project_id = "oxmdxpznadyzwfiwbibd"
 
 [functions.extract-quote-items]
 verify_jwt = false
+
+[functions.search-hotel-images]
+verify_jwt = false
