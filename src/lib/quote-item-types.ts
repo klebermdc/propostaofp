@@ -1,4 +1,4 @@
-import { Hotel, Plane, Car, Map, Shield, Package } from "lucide-react";
+import { Hotel, Plane, Car, Map, Shield, Package, Ticket } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type QuoteItemType = Database["public"]["Enums"]["quote_item_type"];
@@ -9,6 +9,7 @@ export const itemTypeConfig: Record<QuoteItemType, { label: string; icon: typeof
   transfer: { label: "Transfer", icon: Car },
   tour: { label: "Passeio", icon: Map },
   insurance: { label: "Seguro Viagem", icon: Shield },
+  ticket: { label: "Ingresso", icon: Ticket },
   other: { label: "Outro", icon: Package },
 };
 
