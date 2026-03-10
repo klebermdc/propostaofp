@@ -224,8 +224,9 @@ export default function QuoteEditor() {
         notes: notes || null,
         valid_until: validUntil || null,
         discount,
+        installment_count: installmentCount,
         ...(newStatus ? { status: newStatus } : {}),
-      })
+      } as any)
       .eq("id", id);
 
     if (error) {
