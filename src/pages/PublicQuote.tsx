@@ -67,12 +67,32 @@ function FadeInSection({ children, delay = 0, className = "" }: { children: Reac
   );
 }
 
-/* ── Castle silhouette SVG ── */
+/* ── Cinderella Castle silhouette ── */
 function CastleSilhouette() {
   return (
-    <svg viewBox="0 0 400 120" className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] sm:w-[600px] opacity-[0.08]" fill="white">
-      <path d="M50,120 L50,80 L55,80 L55,60 L60,60 L60,80 L80,80 L80,50 L85,45 L90,50 L90,80 L120,80 L120,40 L125,30 L130,40 L130,80 L150,80 L150,55 L155,50 L160,55 L160,80 L180,80 L180,25 L185,15 L190,10 L195,8 L200,5 L205,8 L210,10 L215,15 L220,25 L220,80 L240,80 L240,55 L245,50 L250,55 L250,80 L270,80 L270,40 L275,30 L280,40 L280,80 L310,80 L310,50 L315,45 L320,50 L320,80 L340,80 L340,60 L345,60 L345,80 L350,80 L350,120 Z" />
-      <rect x="190" y="85" width="20" height="35" rx="10" />
+    <svg viewBox="0 0 800 200" className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] sm:w-[900px] opacity-[0.07]" fill="white" preserveAspectRatio="xMidYMax meet">
+      {/* Base walls */}
+      <path d="M100,200 L100,160 L130,160 L130,140 L140,140 L140,160 L200,160 L200,120 L210,120 L210,100 L215,95 L220,100 L220,120 L260,120 L260,90 L265,80 L270,75 L275,80 L280,90 L280,120 L310,120 L310,85 L320,60 L325,55 L330,52 L335,50 L340,48 L345,46 L348,44 L350,42 L352,38 L354,32 L356,25 L358,18 L360,12 L362,8 L364,5 L366,3 L368,2 L370,1 L372,0 L374,0 L376,0 L378,0 L380,0 L382,0 L384,0 L386,1 L388,2 L390,3 L392,5 L394,8 L396,12 L398,18 L400,25 L402,32 L404,38 L406,42 L408,44 L410,46 L415,48 L420,50 L425,52 L430,55 L440,60 L445,85 L445,120 L475,120 L475,90 L480,80 L485,75 L490,80 L495,90 L495,120 L535,120 L535,100 L540,95 L545,100 L545,120 L555,120 L555,160 L615,160 L615,140 L625,140 L625,160 L655,160 L655,200 Z" />
+      {/* Side towers */}
+      <path d="M195,120 L195,70 L200,55 L202,50 L205,45 L207,42 L210,40 L213,42 L215,45 L218,50 L220,55 L225,70 L225,120 Z" opacity="0.9" />
+      <path d="M530,120 L530,70 L535,55 L537,50 L540,45 L542,42 L545,40 L548,42 L550,45 L553,50 L555,55 L560,70 L560,120 Z" opacity="0.9" />
+      {/* Small turrets */}
+      <path d="M255,90 L255,55 L258,42 L260,38 L263,35 L265,33 L268,35 L270,38 L273,42 L275,55 L275,90 Z" opacity="0.8" />
+      <path d="M480,90 L480,55 L483,42 L485,38 L488,35 L490,33 L493,35 L495,38 L498,42 L500,55 L500,90 Z" opacity="0.8" />
+      {/* Entrance arch */}
+      <ellipse cx="378" cy="200" rx="28" ry="40" opacity="0.3" />
+      {/* Windows */}
+      {[160, 240, 320, 430, 510, 590].map((x, i) => (
+        <rect key={i} x={x} y={145} width={8} height={12} rx={4} opacity={0.4} />
+      ))}
+      {/* Flag poles */}
+      <line x1="210" y1="40" x2="210" y2="28" stroke="white" strokeWidth="1.5" opacity="0.5" />
+      <line x1="545" y1="40" x2="545" y2="28" stroke="white" strokeWidth="1.5" opacity="0.5" />
+      <line x1="375" y1="0" x2="375" y2="-12" stroke="white" strokeWidth="1.5" opacity="0.5" />
+      {/* Tiny flags */}
+      <polygon points="210,28 220,32 210,36" opacity="0.3" />
+      <polygon points="545,28 555,32 545,36" opacity="0.3" />
+      <polygon points="375,-12 385,-8 375,-4" opacity="0.3" />
     </svg>
   );
 }
