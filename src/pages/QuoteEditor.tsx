@@ -87,6 +87,8 @@ export default function QuoteEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showAI, setShowAI] = useState(false);
+  const [hotels, setHotels] = useState<HotelOption[]>([]);
+  const [hotelCovers, setHotelCovers] = useState<Record<number, string>>({});
 
   // Form fields
   const [title, setTitle] = useState("");
