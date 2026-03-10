@@ -46,6 +46,7 @@ interface Props {
 export function AIExtractModal({ open, onClose, onConfirm }: Props) {
   const [imageUrl, setImageUrl] = useState("");
   const [cartUrl, setCartUrl] = useState("");
+  const [cartText, setCartText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [extracting, setExtracting] = useState(false);
   const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
