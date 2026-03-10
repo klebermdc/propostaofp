@@ -513,10 +513,8 @@ export default function PublicQuote() {
                 </div>
               </motion.div>
             </FadeInSection>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </FadeInSection>
+
+
 
             {/* ── CTA SECTION ── */}
             <FadeInSection delay={0.2}>
