@@ -298,7 +298,8 @@ export default function QuoteEditor() {
 
   const subtotal = items.reduce((acc, item) => acc + item.unit_price * item.quantity, 0);
   const total = subtotal - discount;
-  const shareUrl = quote ? `${window.location.origin}/quote/${quote.share_token}` : "";
+  const publishedOrigin = "https://propostaofp.lovable.app";
+  const shareUrl = quote ? `${publishedOrigin}/quote/${quote.share_token}` : "";
 
   const copyShareLink = () => {
     navigator.clipboard.writeText(shareUrl);
