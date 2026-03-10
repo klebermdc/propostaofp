@@ -309,7 +309,7 @@ export default function PublicQuote() {
             )}
             {quote.client_email && (
               <Button asChild size="lg" className="gap-2 glass-card text-white hover:bg-white/10 rounded-xl text-base px-8 h-12 border-white/20">
-                <a href={`mailto:${quote.client_email}?subject=Orçamento ${quote.title}&body=Olá, gostaria de fechar o orçamento "${quote.title}".`}>
+                <a href={`mailto:${quote.client_email}?subject=Proposta Mágica - ${quote.title}&body=Olá, gostaria de fechar a proposta "${quote.title}".`}>
                   <Mail className="h-5 w-5" /> Enviar email
                 </a>
               </Button>
