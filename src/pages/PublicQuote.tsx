@@ -1,123 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Plane, MessageCircle, Mail, Calendar, MapPin, Star, Coffee, Car, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Plane, MessageCircle, Mail, Calendar, Sparkles, Star,
+  CheckCircle2, Clock, Shield, ArrowRight,
+} from "lucide-react";
 import { itemTypeConfig } from "@/lib/quote-item-types";
+import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDetails";
 import type { Database } from "@/integrations/supabase/types";
 
 type Quote = Database["public"]["Tables"]["quotes"]["Row"];
 type QuoteItem = Database["public"]["Tables"]["quote_items"]["Row"];
-type Hotel = Database["public"]["Tables"]["hoteis_orlando"]["Row"];
-type HotelFoto = Database["public"]["Tables"]["hotel_fotos"]["Row"];
-
-interface HotelData {
-  hotel: Hotel;
-  fotos: HotelFoto[];
-}
-
-function HotelPhotoCarousel({ fotos }: { fotos: HotelFoto[] }) {
-  const [current, setCurrent] = useState(0);
-  if (fotos.length === 0) return null;
-
-  return (
-    <div className="relative w-full overflow-hidden rounded-lg aspect-video bg-muted">
-      <img
-        src={fotos[current].url}
-        alt={fotos[current].legenda || "Foto do hotel"}
-        className="h-full w-full object-cover transition-opacity duration-300"
-      />
-      {fotos.length > 1 && (
-        <>
-          <button
-            onClick={() => setCurrent((c) => (c - 1 + fotos.length) % fotos.length)}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow hover:bg-background"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setCurrent((c) => (c + 1) % fotos.length)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow hover:bg-background"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
-            {fotos.map((_, i) => (
-              <span
-                key={i}
-                className={`block h-1.5 w-1.5 rounded-full transition-colors ${i === current ? "bg-primary-foreground" : "bg-primary-foreground/40"}`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function HotelDetails({ hotel, fotos }: HotelData) {
-  return (
-    <div className="space-y-3">
-      <HotelPhotoCarousel fotos={fotos} />
-      <div className="flex flex-wrap gap-2">
-        {hotel.categoria && (
-          <Badge variant="secondary" className="gap-1">
-            <Star className="h-3 w-3" /> {hotel.categoria}
-          </Badge>
-        )}
-        {hotel.regiao && (
-          <Badge variant="outline" className="gap-1">
-            <MapPin className="h-3 w-3" /> {hotel.regiao}
-          </Badge>
-        )}
-        {hotel.cafe_da_manha_incluso && (
-          <Badge variant="outline" className="gap-1 text-green-700 border-green-300 bg-green-50">
-            <Coffee className="h-3 w-3" /> Café da manhã incluso
-          </Badge>
-        )}
-      </div>
-      <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-        {hotel.marca && (
-          <div className="flex items-center gap-1.5">
-            <Globe className="h-3.5 w-3.5" /> {hotel.marca}
-          </div>
-        )}
-        {hotel.distancia_disney_km != null && (
-          <div className="flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" /> Disney: {hotel.distancia_disney_km}km
-          </div>
-        )}
-        {hotel.distancia_universal_km != null && (
-          <div className="flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" /> Universal: {hotel.distancia_universal_km}km
-          </div>
-        )}
-        {hotel.distancia_outlet_km != null && (
-          <div className="flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" /> Outlet: {hotel.distancia_outlet_km}km
-          </div>
-        )}
-        {hotel.estacionamento_tipo && (
-          <div className="flex items-center gap-1.5">
-            <Car className="h-3.5 w-3.5" /> Estacionamento: {hotel.estacionamento_tipo}
-            {hotel.estacionamento_valor_diaria ? ` (R$ ${hotel.estacionamento_valor_diaria}/dia)` : ""}
-          </div>
-        )}
-        {hotel.tipo_quarto_familia && (
-          <div className="col-span-2 flex items-center gap-1.5">
-            🛏️ {hotel.tipo_quarto_familia}
-          </div>
-        )}
-      </div>
-      {hotel.observacoes && (
-        <p className="text-sm text-muted-foreground italic">{hotel.observacoes}</p>
-      )}
-    </div>
-  );
-}
 
 export default function PublicQuote() {
   const { shareToken } = useParams<{ shareToken: string }>();
@@ -160,7 +57,6 @@ export default function PublicQuote() {
 
     const allItems = itemsData || [];
 
-    // Collect hotel IDs from metadata
     const hotelIds = allItems
       .filter((i) => i.item_type === "hotel" && (i.metadata as any)?.hotel_id)
       .map((i) => (i.metadata as any).hotel_id as number);
@@ -187,20 +83,28 @@ export default function PublicQuote() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-[hsl(30,30%,4%)]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+            <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-accent animate-pulse" />
+          </div>
+          <p className="text-white/60 text-sm font-medium">Preparando sua magia...</p>
+        </div>
       </div>
     );
   }
 
   if (notFound || !quote) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="flex min-h-screen items-center justify-center bg-[hsl(30,30%,4%)] px-4">
         <div className="text-center">
-          <Plane className="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
-          <h1 className="font-display text-2xl font-bold">Orçamento não encontrado</h1>
-          <p className="mt-2 text-muted-foreground">
-            Este orçamento pode ter expirado ou não estar disponível.
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
+            <Plane className="h-10 w-10 text-accent/60" />
+          </div>
+          <h1 className="font-display text-2xl font-bold text-white">Orçamento não encontrado</h1>
+          <p className="mt-3 text-white/50 max-w-sm mx-auto">
+            Este orçamento pode ter expirado ou não estar mais disponível. Entre em contato com seu agente.
           </p>
         </div>
       </div>
@@ -218,30 +122,59 @@ export default function PublicQuote() {
 
   const whatsappUrl = quote.client_phone
     ? `https://wa.me/${quote.client_phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-        `Olá! Gostaria de conversar sobre o orçamento "${quote.title}".`
+        `Olá! Gostaria de fechar o orçamento "${quote.title}". Vamos conversar? ✨`
       )}`
     : null;
 
+  const whatsappGenericUrl = `https://wa.me/?text=${encodeURIComponent(
+    `Olá! Vi o orçamento "${quote.title}" e gostaria de mais informações.`
+  )}`;
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[hsl(30,30%,4%)] text-white">
+      {/* Floating sparkle particles (CSS) */}
+      <style>{`
+        @keyframes float { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-20px) scale(1.1)} }
+        @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .sparkle-bg { position:relative; overflow:hidden; }
+        .sparkle-bg::before { content:'✨'; position:absolute; top:20%; left:10%; font-size:1.5rem; animation:float 6s ease-in-out infinite, twinkle 3s ease-in-out infinite; opacity:0.3; }
+        .sparkle-bg::after { content:'🏰'; position:absolute; top:30%; right:8%; font-size:2rem; animation:float 8s ease-in-out infinite 1s, twinkle 4s ease-in-out infinite 0.5s; opacity:0.2; }
+        .magic-gradient { background: linear-gradient(135deg, hsl(25,90%,48%) 0%, hsl(35,95%,55%) 50%, hsl(30,85%,50%) 100%); }
+        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .glow-accent { box-shadow: 0 0 30px hsl(32,95%,52%,0.3), 0 0 60px hsl(32,95%,52%,0.1); }
+      `}</style>
+
       {/* Hero */}
-      <div className="bg-primary px-4 pb-16 pt-12 text-primary-foreground">
-        <div className="mx-auto max-w-3xl">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/20">
-              <Plane className="h-5 w-5" />
+      <div className="sparkle-bg magic-gradient px-4 pb-20 pt-14 relative">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoLTZ2LTRIMTZ2LTZoNnYtNmg2djZoNnY2aC02eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
+        <div className="mx-auto max-w-3xl relative z-10">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
+              <Plane className="h-6 w-6 text-white" />
             </div>
-            <span className="font-display text-lg font-bold">Orlando Fast Pass</span>
+            <div>
+              <span className="font-display text-xl font-bold tracking-tight">Orlando Fast Pass</span>
+              <p className="text-white/70 text-xs font-medium">Sua viagem dos sonhos começa aqui ✨</p>
+            </div>
           </div>
-          <h1 className="font-display text-3xl font-bold sm:text-4xl">{quote.title}</h1>
-          {quote.client_name && (
-            <p className="mt-2 text-lg text-primary-foreground/80">
-              Preparado para {quote.client_name}
-            </p>
-          )}
+
+          <div className="space-y-3">
+            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-3 py-1">
+              <Sparkles className="h-3 w-3 mr-1" /> Proposta Exclusiva
+            </Badge>
+            <h1 className="font-display text-3xl sm:text-5xl font-bold leading-tight drop-shadow-lg">
+              {quote.title}
+            </h1>
+            {quote.client_name && (
+              <p className="text-xl text-white/90 font-medium">
+                Preparada especialmente para <span className="underline decoration-white/40 decoration-2 underline-offset-4">{quote.client_name}</span> 🎉
+              </p>
+            )}
+          </div>
+
           {quote.valid_until && (
-            <div className="mt-4 flex items-center gap-2 text-sm text-primary-foreground/70">
-              <Calendar className="h-4 w-4" />
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-2 text-sm text-white/90">
+              <Clock className="h-4 w-4" />
               Válido até {new Date(quote.valid_until).toLocaleDateString("pt-BR")}
             </div>
           )}
@@ -249,56 +182,71 @@ export default function PublicQuote() {
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-3xl px-4 -mt-8 pb-12 space-y-6">
+      <div className="mx-auto max-w-3xl px-4 -mt-10 pb-16 space-y-6 relative z-10">
+
+        {/* Trust badges */}
+        <div className="glass-card rounded-2xl p-4 flex flex-wrap justify-center gap-4 sm:gap-8 text-center">
+          {[
+            { icon: Shield, label: "Pagamento\nSeguro" },
+            { icon: Star, label: "Melhor\nPreço" },
+            { icon: CheckCircle2, label: "Experiência\nGarantida" },
+          ].map(({ icon: Icon, label }) => (
+            <div key={label} className="flex items-center gap-2 text-white/70">
+              <Icon className="h-5 w-5 text-accent" />
+              <span className="text-xs font-medium whitespace-pre-line text-left">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Grouped items */}
         {Object.entries(grouped).map(([type, typeItems]) => {
           const config = itemTypeConfig[type as keyof typeof itemTypeConfig];
           const Icon = config.icon;
           return (
-            <Card key={type} className="overflow-hidden animate-fade-in shadow-lg">
-              <CardHeader className="bg-muted/50 pb-3 pt-4">
-                <CardTitle className="flex items-center gap-2 font-display text-base">
-                  <Icon className="h-5 w-5 text-primary" />
-                  {config.label}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="divide-y p-0">
+            <Card key={type} className="overflow-hidden rounded-2xl border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-xl">
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl magic-gradient shadow-md">
+                  <Icon className="h-4 w-4 text-white" />
+                </div>
+                <h2 className="font-display text-lg font-semibold text-white">{config.label}</h2>
+                <Badge variant="outline" className="ml-auto border-white/20 text-white/50 text-xs">
+                  {typeItems.length} {typeItems.length === 1 ? "item" : "itens"}
+                </Badge>
+              </div>
+              <CardContent className="divide-y divide-white/5 p-0">
                 {typeItems.map((item) => {
                   const hotelId = (item.metadata as any)?.hotel_id;
                   const hotelData = hotelId ? hotelDataMap[hotelId] : null;
 
                   return (
-                    <div key={item.id} className="p-4 space-y-3">
-                      <div className="flex items-start justify-between">
+                    <div key={item.id} className="p-5 space-y-3 hover:bg-white/[0.02] transition-colors">
+                      <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium">{item.description}</p>
+                          <p className="font-semibold text-white">{item.description}</p>
                           {(item.start_date || item.end_date) && (
-                            <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              {item.start_date &&
-                                new Date(item.start_date).toLocaleDateString("pt-BR")}
+                            <p className="mt-1.5 flex items-center gap-1.5 text-sm text-white/50">
+                              <Calendar className="h-3.5 w-3.5" />
+                              {item.start_date && new Date(item.start_date).toLocaleDateString("pt-BR")}
                               {item.start_date && item.end_date && " → "}
-                              {item.end_date &&
-                                new Date(item.end_date).toLocaleDateString("pt-BR")}
+                              {item.end_date && new Date(item.end_date).toLocaleDateString("pt-BR")}
                             </p>
                           )}
                           {item.observations && (
-                            <p className="mt-1 text-sm text-muted-foreground">
-                              {item.observations}
-                            </p>
+                            <p className="mt-1.5 text-sm text-white/40">{item.observations}</p>
                           )}
                         </div>
-                        <div className="ml-4 text-right">
-                          <p className="font-semibold">
-                            R$ {(item.unit_price * item.quantity).toFixed(2)}
+                        <div className="text-right shrink-0">
+                          <p className="text-lg font-bold text-accent">
+                            R$ {(item.unit_price * item.quantity).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                           </p>
                           {item.quantity > 1 && (
-                            <p className="text-xs text-muted-foreground">
-                              {item.quantity}x R$ {item.unit_price.toFixed(2)}
+                            <p className="text-xs text-white/40 mt-0.5">
+                              {item.quantity}x R$ {item.unit_price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                             </p>
                           )}
-                          {(quote as any).installment_count > 1 && item.unit_price > 0 && (
-                            <p className="text-xs text-muted-foreground">
-                              ou {(quote as any).installment_count}x R$ {((item.unit_price * item.quantity) / (quote as any).installment_count).toFixed(2)}
+                          {quote.installment_count > 1 && item.unit_price > 0 && (
+                            <p className="text-xs text-accent/70 mt-0.5">
+                              ou {quote.installment_count}x R$ {((item.unit_price * item.quantity) / quote.installment_count).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                             </p>
                           )}
                         </div>
@@ -312,69 +260,100 @@ export default function PublicQuote() {
           );
         })}
 
-        {/* Summary */}
-        <Card className="shadow-lg border-primary/20">
-          <CardContent className="p-6">
-            <div className="space-y-2">
+        {/* Total Card */}
+        <Card className="overflow-hidden rounded-2xl glow-accent border-accent/30 bg-white/[0.05] backdrop-blur-sm">
+          <CardContent className="p-6 space-y-3">
+            <div className="flex justify-between text-sm text-white/60">
+              <span>Subtotal</span>
+              <span>R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+            </div>
+            {quote.discount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span>R$ {subtotal.toFixed(2)}</span>
+                <span className="text-success flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Desconto especial
+                </span>
+                <span className="text-success font-medium">
+                  - R$ {quote.discount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </span>
               </div>
-              {quote.discount > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Desconto</span>
-                  <span className="text-destructive">- R$ {quote.discount.toFixed(2)}</span>
-                </div>
-              )}
-              <Separator />
-              <div className="flex justify-between text-xl font-bold">
-                <span>Total à vista</span>
-                <span className="text-primary">R$ {total.toFixed(2)}</span>
+            )}
+            <Separator className="bg-white/10" />
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-sm text-white/50">Total à vista</p>
+                <p className="text-3xl font-display font-bold text-accent mt-1">
+                  R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </p>
               </div>
-              {(quote as any).installment_count > 1 && total > 0 && (
-                <div className="flex justify-between text-sm text-muted-foreground mt-1">
-                  <span>ou parcelado em {(quote as any).installment_count}x</span>
-                  <span>R$ {(total / (quote as any).installment_count).toFixed(2)}/mês</span>
+              {quote.installment_count > 1 && total > 0 && (
+                <div className="text-right">
+                  <p className="text-white/50 text-xs">ou parcelado</p>
+                  <p className="text-white font-semibold">
+                    {quote.installment_count}x R$ {(total / quote.installment_count).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  </p>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
 
+        {/* CTA Section */}
+        <div className="glass-card rounded-2xl p-6 sm:p-8 text-center space-y-5">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full magic-gradient shadow-lg mx-auto">
+            <Sparkles className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">
+            Pronto para realizar seu sonho? ✨
+          </h2>
+          <p className="text-white/60 max-w-md mx-auto">
+            Garanta já sua viagem mágica para Orlando! Fale com nosso time e feche seu pacote com as melhores condições.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center pt-2">
+            {whatsappUrl && (
+              <Button asChild size="lg" className="gap-2 magic-gradient text-white hover:opacity-90 shadow-lg rounded-xl text-base px-8 h-12 font-semibold">
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-5 w-5" /> Fechar agora no WhatsApp
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </a>
+              </Button>
+            )}
+            {quote.client_email && (
+              <Button asChild size="lg" className="gap-2 glass-card text-white hover:bg-white/10 rounded-xl text-base px-8 h-12 border-white/20">
+                <a href={`mailto:${quote.client_email}?subject=Orçamento ${quote.title}&body=Olá, gostaria de fechar o orçamento "${quote.title}".`}>
+                  <Mail className="h-5 w-5" /> Enviar email
+                </a>
+              </Button>
+            )}
+          </div>
+        </div>
+
         {/* Notes */}
         {quote.notes && (
-          <Card>
+          <Card className="rounded-2xl border-white/10 bg-white/[0.03] backdrop-blur-sm">
             <CardContent className="p-5">
-              <p className="text-sm font-medium text-muted-foreground mb-2">Condições e observações</p>
-              <p className="text-sm whitespace-pre-wrap">{quote.notes}</p>
+              <p className="text-xs font-semibold text-accent uppercase tracking-wider mb-3">Condições e observações</p>
+              <p className="text-sm text-white/60 whitespace-pre-wrap leading-relaxed">{quote.notes}</p>
             </CardContent>
           </Card>
         )}
 
-        {/* Contact buttons */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          {whatsappUrl && (
-            <Button asChild size="lg" className="gap-2 bg-[hsl(142,72%,40%)] hover:bg-[hsl(142,72%,35%)]">
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-5 w-5" /> Falar no WhatsApp
-              </a>
-            </Button>
-          )}
-          {quote.client_email && (
-            <Button asChild variant="outline" size="lg" className="gap-2">
-              <a href={`mailto:${quote.client_email}`}>
-                <Mail className="h-5 w-5" /> Enviar email
-              </a>
-            </Button>
-          )}
+        {/* Segundo CTA menor */}
+        <div className="text-center space-y-3 py-4">
+          <p className="text-white/40 text-sm">Tem alguma dúvida? Estamos aqui para ajudar!</p>
+          <Button asChild variant="outline" className="rounded-full border-accent/40 text-accent hover:bg-accent/10 px-6">
+            <a href={whatsappUrl || whatsappGenericUrl} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="h-4 w-4 mr-2" /> Tirar dúvidas
+            </a>
+          </Button>
         </div>
 
         {/* Footer */}
-        <div className="pt-8 text-center">
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        <div className="pt-6 pb-4 text-center border-t border-white/5">
+          <div className="flex items-center justify-center gap-2 text-white/30 text-sm">
             <Plane className="h-4 w-4" />
-            Orlando Fast Pass
+            <span className="font-display font-semibold">Orlando Fast Pass</span>
           </div>
+          <p className="text-white/20 text-xs mt-2">Transformando sonhos em realidade ✨</p>
         </div>
       </div>
     </div>
