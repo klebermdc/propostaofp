@@ -69,9 +69,11 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
   const extract = async () => {
     setExtracting(true);
     try {
-      let payload: { image_url?: string; file_path?: string } = {};
+      let payload: { image_url?: string; file_path?: string; cart_url?: string } = {};
 
-      if (file) {
+      if (cartUrl) {
+        payload.cart_url = cartUrl;
+      } else if (file) {
         // Upload to storage
         const ext = file.name.split(".").pop();
         const path = `ai-extractions/${Date.now()}.${ext}`;
@@ -86,7 +88,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
       } else if (imageUrl) {
         payload.image_url = imageUrl;
       } else {
-        toast({ title: "Forneça uma imagem ou PDF", variant: "destructive" });
+        toast({ title: "Forneça uma imagem, PDF ou link do carrinho", variant: "destructive" });
         setExtracting(false);
         return;
       }
