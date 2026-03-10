@@ -171,7 +171,7 @@ export default function PublicQuote() {
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-3xl px-4 -mt-10 pb-16 space-y-6 relative z-10">
+      <div className="mx-auto max-w-3xl px-4 -mt-4 pb-16 space-y-5 relative z-10">
 
         {/* Trust badges */}
         <div className="glass-card rounded-2xl p-4 flex flex-wrap justify-center gap-4 sm:gap-8 text-center">
