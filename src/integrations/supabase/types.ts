@@ -155,7 +155,7 @@ export type Database = {
           preco_adulto: number | null
           preco_crianca: number | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           categoria?: string | null
@@ -169,7 +169,7 @@ export type Database = {
           preco_adulto?: number | null
           preco_crianca?: number | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Update: {
           categoria?: string | null
@@ -183,7 +183,7 @@ export type Database = {
           preco_adulto?: number | null
           preco_crianca?: number | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
