@@ -130,8 +130,13 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
     try {
       let payload: { image_url?: string; file_path?: string; cart_url?: string } = {};
 
-      if (cartUrl) {
-        payload.cart_url = cartUrl;
+      if (cartUrl || cartText) {
+        // Combine URL and pasted text
+        let combinedCart = cartUrl || "";
+        if (cartText) {
+          combinedCart = combinedCart ? `${combinedCart}\n\n${cartText}` : cartText;
+        }
+        payload.cart_url = combinedCart;
       } else if (file) {
         // Upload to storage
         const ext = file.name.split(".").pop();
