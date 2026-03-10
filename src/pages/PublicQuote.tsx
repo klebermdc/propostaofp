@@ -288,6 +288,11 @@ export default function PublicQuote() {
                               {item.quantity}x R$ {item.unit_price.toFixed(2)}
                             </p>
                           )}
+                          {(quote as any).installment_count > 1 && item.unit_price > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              ou {(quote as any).installment_count}x R$ {((item.unit_price * item.quantity) / (quote as any).installment_count).toFixed(2)}
+                            </p>
+                          )}
                         </div>
                       </div>
                       {hotelData && <HotelDetails {...hotelData} />}
