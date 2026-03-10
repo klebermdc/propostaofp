@@ -102,9 +102,9 @@ export default function PublicQuote() {
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
             <Plane className="h-10 w-10 text-accent/60" />
           </div>
-          <h1 className="font-display text-2xl font-bold text-white">Orçamento não encontrado</h1>
+          <h1 className="font-display text-2xl font-bold text-white">Proposta não encontrada</h1>
           <p className="mt-3 text-white/50 max-w-sm mx-auto">
-            Este orçamento pode ter expirado ou não estar mais disponível. Entre em contato com seu agente.
+            Esta proposta pode ter expirado ou não estar mais disponível. Entre em contato com seu agente.
           </p>
         </div>
       </div>
