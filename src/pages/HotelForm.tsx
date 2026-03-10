@@ -556,8 +556,69 @@ export default function HotelForm() {
                   </Button>
                 </div>
 
+                {/* Divider */}
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">ou busque automaticamente</span></div>
+                </div>
+
+                {/* Auto-search button */}
+                <Button
+                  variant="default"
+                  onClick={handleSearchImages}
+                  disabled={searching || !form.nome_hotel.trim()}
+                  className="w-full gap-2"
+                >
+                  {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <SearchIcon className="h-4 w-4" />}
+                  {searching ? "Buscando fotos..." : "🔍 Buscar Fotos do Hotel (Google)"}
+                </Button>
+
+                {/* Search results grid */}
+                {searchResults.length > 0 && (
+                  <div className="grid gap-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">{searchResults.length} imagens encontradas — selecione as que deseja adicionar:</p>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveSelectedImages}
+                        disabled={selectedResults.size === 0 || savingSelected}
+                        className="gap-1"
+                      >
+                        {savingSelected ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                        Adicionar {selectedResults.size > 0 ? `(${selectedResults.size})` : ""}
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {searchResults.map((img, i) => (
+                        <div
+                          key={i}
+                          className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
+                            selectedResults.has(i) ? "border-primary ring-2 ring-primary/30" : "border-transparent hover:border-muted-foreground/30"
+                          }`}
+                          onClick={() => toggleResultSelection(i)}
+                        >
+                          <img
+                            src={img.thumbnail || img.url}
+                            alt={img.title}
+                            className="aspect-[4/3] w-full object-cover"
+                            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                          />
+                          {selectedResults.has(i) && (
+                            <div className="absolute left-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                              <Check className="h-3 w-3" />
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1.5 py-0.5 text-[10px] text-white line-clamp-1">
+                            {img.title || "Imagem"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-xs text-muted-foreground">
-                  Faça upload de fotos do seu computador ou cole URLs de imagens dos hotéis. A primeira foto será definida como capa automaticamente.
+                  Faça upload, cole URLs ou busque automaticamente fotos do hotel via Google Images (SerpAPI). A primeira foto será a capa.
                 </p>
               </CardContent>
             </Card>
