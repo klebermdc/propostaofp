@@ -26,6 +26,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft,
@@ -36,7 +49,11 @@ import {
   Link as LinkIcon,
   Copy,
   Sparkles,
+  Hotel,
+  ChevronsUpDown,
+  Check,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { itemTypeConfig, itemTypes } from "@/lib/quote-item-types";
 import { AIExtractModal } from "@/components/AIExtractModal";
 import type { Database } from "@/integrations/supabase/types";
@@ -45,6 +62,19 @@ type Quote = Database["public"]["Tables"]["quotes"]["Row"];
 type QuoteItem = Database["public"]["Tables"]["quote_items"]["Row"];
 type QuoteItemInsert = Database["public"]["Tables"]["quote_items"]["Insert"];
 type QuoteItemType = Database["public"]["Enums"]["quote_item_type"];
+
+type HotelOption = {
+  id: number;
+  nome_hotel: string;
+  marca: string | null;
+  regiao: string;
+  categoria: string;
+  cafe_da_manha_incluso: boolean | null;
+  estacionamento_tipo: string | null;
+  tipo_quarto_familia: string | null;
+  publico_brasileiro: string;
+  cover_url?: string;
+};
 
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
@@ -57,6 +87,8 @@ export default function QuoteEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showAI, setShowAI] = useState(false);
+  const [hotels, setHotels] = useState<HotelOption[]>([]);
+  const [hotelCovers, setHotelCovers] = useState<Record<number, string>>({});
 
   // Form fields
   const [title, setTitle] = useState("");
@@ -69,7 +101,42 @@ export default function QuoteEditor() {
 
   useEffect(() => {
     if (id) fetchQuote();
+    fetchHotels();
   }, [id]);
+
+  const fetchHotels = async () => {
+    const [hotelsRes, coversRes] = await Promise.all([
+      supabase.from("hoteis_orlando").select("id, nome_hotel, marca, regiao, categoria, cafe_da_manha_incluso, estacionamento_tipo, tipo_quarto_familia, publico_brasileiro").order("nome_hotel"),
+      supabase.from("hotel_fotos").select("hotel_id, url").eq("is_capa", true),
+    ]);
+    if (hotelsRes.data) {
+      setHotels(hotelsRes.data as unknown as HotelOption[]);
+    }
+    if (coversRes.data) {
+      const covers: Record<number, string> = {};
+      for (const f of coversRes.data as any[]) covers[f.hotel_id] = f.url;
+      setHotelCovers(covers);
+    }
+  };
+
+  const selectHotelForItem = (itemId: string, hotelId: number) => {
+    const hotel = hotels.find((h) => h.id === hotelId);
+    if (!hotel) return;
+    const details = [
+      hotel.regiao && `Região: ${hotel.regiao}`,
+      hotel.categoria && `Categoria: ${hotel.categoria}`,
+      hotel.cafe_da_manha_incluso ? "Café da manhã incluso" : null,
+      hotel.estacionamento_tipo && `Estacionamento: ${hotel.estacionamento_tipo}`,
+      hotel.tipo_quarto_familia && `Quarto: ${hotel.tipo_quarto_familia}`,
+    ].filter(Boolean).join(" | ");
+
+    updateItem(itemId, {
+      description: `${hotel.nome_hotel}${hotel.marca ? ` (${hotel.marca})` : ""}`,
+      item_type: "hotel" as QuoteItemType,
+      observations: details,
+      metadata: { hotel_id: hotel.id, hotel_nome: hotel.nome_hotel } as any,
+    });
+  };
 
   const fetchQuote = async () => {
     const [quoteRes, itemsRes] = await Promise.all([
@@ -300,6 +367,15 @@ export default function QuoteEditor() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
+                    {/* Hotel selector - shown when type is hotel */}
+                    {item.item_type === "hotel" && hotels.length > 0 && (
+                      <HotelSelector
+                        hotels={hotels}
+                        hotelCovers={hotelCovers}
+                        selectedHotelId={(item.metadata as any)?.hotel_id || null}
+                        onSelect={(hotelId) => selectHotelForItem(item.id, hotelId)}
+                      />
+                    )}
                     <Input
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
@@ -469,5 +545,74 @@ export default function QuoteEditor() {
       {/* AI Modal */}
       <AIExtractModal open={showAI} onClose={() => setShowAI(false)} onConfirm={handleAIItems} />
     </div>
+  );
+}
+
+function HotelSelector({
+  hotels,
+  hotelCovers,
+  selectedHotelId,
+  onSelect,
+}: {
+  hotels: HotelOption[];
+  hotelCovers: Record<number, string>;
+  selectedHotelId: number | null;
+  onSelect: (hotelId: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = hotels.find((h) => h.id === selectedHotelId);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between h-9 text-sm">
+          {selected ? (
+            <div className="flex items-center gap-2 truncate">
+              <Hotel className="h-3.5 w-3.5 shrink-0 text-primary" />
+              <span className="truncate">{selected.nome_hotel}</span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{selected.regiao}</Badge>
+            </div>
+          ) : (
+            <span className="text-muted-foreground">Selecionar hotel cadastrado...</span>
+          )}
+          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Buscar hotel..." />
+          <CommandList>
+            <CommandEmpty>Nenhum hotel encontrado.</CommandEmpty>
+            <CommandGroup>
+              {hotels.map((hotel) => (
+                <CommandItem
+                  key={hotel.id}
+                  value={hotel.nome_hotel}
+                  onSelect={() => {
+                    onSelect(hotel.id);
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-3 py-2"
+                >
+                  <img
+                    src={hotelCovers[hotel.id] || "/placeholder.svg"}
+                    alt={hotel.nome_hotel}
+                    className="h-10 w-14 rounded object-cover shrink-0"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{hotel.nome_hotel}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {hotel.regiao} · {hotel.categoria} · Público BR: {hotel.publico_brasileiro}
+                    </p>
+                  </div>
+                  <Check className={cn("h-4 w-4 shrink-0", selectedHotelId === hotel.id ? "opacity-100" : "opacity-0")} />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
