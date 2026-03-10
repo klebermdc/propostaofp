@@ -1,1 +1,4 @@
 project_id = "oxmdxpznadyzwfiwbibd"
+
+[functions.extract-quote-items]
+verify_jwt = false
