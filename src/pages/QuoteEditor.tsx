@@ -367,6 +367,15 @@ export default function QuoteEditor() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
+                    {/* Hotel selector - shown when type is hotel */}
+                    {item.item_type === "hotel" && hotels.length > 0 && (
+                      <HotelSelector
+                        hotels={hotels}
+                        hotelCovers={hotelCovers}
+                        selectedHotelId={(item.metadata as any)?.hotel_id || null}
+                        onSelect={(hotelId) => selectHotelForItem(item.id, hotelId)}
+                      />
+                    )}
                     <Input
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
