@@ -56,6 +56,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
   const reset = () => {
     setImageUrl("");
     setCartUrl("");
+    setCartText("");
     setFile(null);
     setExtractedItems([]);
     setStep("input");
