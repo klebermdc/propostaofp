@@ -50,6 +50,7 @@ import {
   Copy,
   Sparkles,
   Hotel,
+  Ticket,
   ChevronsUpDown,
   Check,
 } from "lucide-react";
