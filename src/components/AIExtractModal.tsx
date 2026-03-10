@@ -162,15 +162,29 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
 
         {step === "input" ? (
           <div className="space-y-4">
-            <Tabs defaultValue="url">
+            <Tabs defaultValue="cart">
               <TabsList className="w-full">
+                <TabsTrigger value="cart" className="flex-1 gap-2">
+                  <ShoppingCart className="h-4 w-4" /> Link do carrinho
+                </TabsTrigger>
                 <TabsTrigger value="url" className="flex-1 gap-2">
-                  <Link className="h-4 w-4" /> Link de imagem
+                  <Link className="h-4 w-4" /> Imagem
                 </TabsTrigger>
                 <TabsTrigger value="file" className="flex-1 gap-2">
-                  <Upload className="h-4 w-4" /> Upload de arquivo
+                  <Upload className="h-4 w-4" /> Arquivo
                 </TabsTrigger>
               </TabsList>
+              <TabsContent value="cart" className="mt-4 space-y-2">
+                <Label>URL do carrinho / checkout</Label>
+                <Input
+                  value={cartUrl}
+                  onChange={(e) => setCartUrl(e.target.value)}
+                  placeholder="https://reservas.orlandofastpass.com.br/pt/checkout/..."
+                />
+                <p className="text-xs text-muted-foreground">
+                  Cole o link do carrinho ou checkout do seu site de reservas para importar os itens automaticamente.
+                </p>
+              </TabsContent>
               <TabsContent value="url" className="mt-4 space-y-2">
                 <Label>URL da imagem</Label>
                 <Input
@@ -197,7 +211,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
 
             <Button
               onClick={extract}
-              disabled={extracting || (!imageUrl && !file)}
+              disabled={extracting || (!imageUrl && !file && !cartUrl)}
               className="w-full gap-2"
             >
               {extracting ? (

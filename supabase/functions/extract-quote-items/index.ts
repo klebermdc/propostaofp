@@ -12,34 +12,71 @@ serve(async (req) => {
   }
 
   try {
-    const { image_url, file_path } = await req.json();
+    const { image_url, file_path, cart_url } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const contentParts: any[] = [
-      {
+    const contentParts: any[] = [];
+
+    // If cart_url is provided, fetch the page HTML and send as text
+    if (cart_url) {
+      console.log("Fetching cart URL:", cart_url);
+      const pageResponse = await fetch(cart_url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+        },
+      });
+
+      if (!pageResponse.ok) {
+        throw new Error(`Falha ao acessar a página: ${pageResponse.status}`);
+      }
+
+      const pageHtml = await pageResponse.text();
+      console.log("Page HTML length:", pageHtml.length);
+
+      contentParts.push({
+        type: "text",
+        text: `Analise o HTML desta página de checkout/carrinho de um site de venda de ingressos e passeios para Orlando.
+Extraia TODOS os itens do carrinho encontrados no HTML.
+
+Para cada item, identifique:
+- Tipo de serviço (hotel, flight, transfer, tour, insurance, ticket, other) - ingressos de parques devem ser "ticket", passeios devem ser "tour"
+- Nome/descrição do produto
+- Data de uso (formato YYYY-MM-DD se disponível)
+- Valor unitário em reais (número decimal) - procure por preços no HTML
+- Quantidade de adultos e crianças (separe como itens distintos se tiver preços diferentes)
+
+HTML da página:
+${pageHtml.substring(0, 100000)}
+
+Retorne os dados usando a função extract_items.`,
+      });
+    } else {
+      contentParts.push({
         type: "text",
         text: `Analise esta imagem/documento de cotação de viagem e extraia todos os itens de serviço encontrados.
 Para cada item, identifique:
-- Tipo de serviço (hotel, flight, transfer, tour, insurance, other)
+- Tipo de serviço (hotel, flight, transfer, tour, insurance, ticket, other)
 - Descrição detalhada
 - Datas de início e fim (formato YYYY-MM-DD se disponíveis)
 - Valor unitário em reais (número decimal)
 - Quantidade
 
 Retorne os dados usando a função extract_items.`,
-      },
-    ];
-
-    if (image_url) {
-      contentParts.push({
-        type: "image_url",
-        image_url: { url: image_url },
       });
+
+      if (image_url) {
+        contentParts.push({
+          type: "image_url",
+          image_url: { url: image_url },
+        });
+      }
     }
 
     const body: any = {
-      model: "google/gemini-2.5-pro",
+      model: "google/gemini-2.5-flash",
       messages: [
         {
           role: "user",
@@ -52,7 +89,7 @@ Retorne os dados usando a função extract_items.`,
           function: {
             name: "extract_items",
             description:
-              "Extract travel quote items from the provided image or document.",
+              "Extract travel quote items from the provided content.",
             parameters: {
               type: "object",
               properties: {
@@ -69,6 +106,7 @@ Retorne os dados usando a função extract_items.`,
                           "transfer",
                           "tour",
                           "insurance",
+                          "ticket",
                           "other",
                         ],
                       },
