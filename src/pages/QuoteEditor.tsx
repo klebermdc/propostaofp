@@ -77,6 +77,18 @@ type HotelOption = {
   cover_url?: string;
 };
 
+type TicketOption = {
+  id: number;
+  nome_ingresso: string;
+  grupo: string;
+  categoria: string | null;
+  dias_validade: number | null;
+  inclui_refeicao: boolean | null;
+  preco_adulto: number | null;
+  preco_crianca: number | null;
+  observacoes: string | null;
+};
+
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
