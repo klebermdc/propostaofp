@@ -112,6 +112,7 @@ export default function QuoteEditor() {
   const [notes, setNotes] = useState("");
   const [validUntil, setValidUntil] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [installmentCount, setInstallmentCount] = useState(10);
 
   useEffect(() => {
     if (id) fetchQuote();
