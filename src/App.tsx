@@ -9,6 +9,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import QuoteEditor from "./pages/QuoteEditor";
 import PublicQuote from "./pages/PublicQuote";
+import HotelsPage from "./pages/HotelsPage";
+import HotelForm from "./pages/HotelForm";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
