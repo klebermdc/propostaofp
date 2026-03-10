@@ -288,7 +288,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
 
             <Button
               onClick={extract}
-              disabled={extracting || (!imageUrl && !file && !cartUrl)}
+              disabled={extracting || (!imageUrl && !file && !cartUrl && !cartText)}
               className="w-full gap-2"
             >
               {extracting ? (
