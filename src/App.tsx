@@ -41,6 +41,30 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/hotels"
+              element={
+                <ProtectedRoute>
+                  <HotelsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hotels/new"
+              element={
+                <ProtectedRoute>
+                  <HotelForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hotels/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <HotelForm />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/quote/:shareToken" element={<PublicQuote />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
