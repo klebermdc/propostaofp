@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Upload, Link, Loader2, Check, X, Trash2 } from "lucide-react";
+import { Sparkles, Upload, Link, Loader2, Check, X, Trash2, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { itemTypes, itemTypeConfig } from "@/lib/quote-item-types";
 import type { Database } from "@/integrations/supabase/types";
