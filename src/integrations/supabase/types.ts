@@ -142,6 +142,51 @@ export type Database = {
           },
         ]
       }
+      ingressos_orlando: {
+        Row: {
+          categoria: string | null
+          created_at: string
+          dias_validade: number | null
+          grupo: string
+          id: number
+          inclui_refeicao: boolean | null
+          nome_ingresso: string
+          observacoes: string | null
+          preco_adulto: number | null
+          preco_crianca: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string
+          dias_validade?: number | null
+          grupo: string
+          id?: number
+          inclui_refeicao?: boolean | null
+          nome_ingresso: string
+          observacoes?: string | null
+          preco_adulto?: number | null
+          preco_crianca?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string
+          dias_validade?: number | null
+          grupo?: string
+          id?: number
+          inclui_refeicao?: boolean | null
+          nome_ingresso?: string
+          observacoes?: string | null
+          preco_adulto?: number | null
+          preco_crianca?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -319,6 +364,7 @@ export type Database = {
         | "tour"
         | "insurance"
         | "other"
+        | "ticket"
       quote_status: "draft" | "sent" | "accepted" | "expired"
     }
     CompositeTypes: {
@@ -455,6 +501,7 @@ export const Constants = {
         "tour",
         "insurance",
         "other",
+        "ticket",
       ],
       quote_status: ["draft", "sent", "accepted", "expired"],
     },
