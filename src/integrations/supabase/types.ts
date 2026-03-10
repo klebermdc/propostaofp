@@ -101,6 +101,47 @@ export type Database = {
         }
         Relationships: []
       }
+      hotel_fotos: {
+        Row: {
+          created_at: string
+          hotel_id: number
+          id: string
+          is_capa: boolean | null
+          legenda: string | null
+          sort_order: number | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hotel_id: number
+          id?: string
+          is_capa?: boolean | null
+          legenda?: string | null
+          sort_order?: number | null
+          url: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          hotel_id?: number
+          id?: string
+          is_capa?: boolean | null
+          legenda?: string | null
+          sort_order?: number | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hotel_fotos_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hoteis_orlando"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
