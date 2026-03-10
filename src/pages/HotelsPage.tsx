@@ -286,6 +286,14 @@ export default function HotelsPage() {
               <TableBody>
                 {filtered.map((hotel) => (
                   <TableRow key={hotel.id}>
+                    <TableCell className="w-16 p-2">
+                      <img
+                        src={coverPhotos[hotel.id] || "/placeholder.svg"}
+                        alt={hotel.nome_hotel}
+                        className="h-12 w-16 rounded object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div>
                         <p className="font-medium">{hotel.nome_hotel}</p>
