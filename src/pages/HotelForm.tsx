@@ -237,6 +237,73 @@ export default function HotelForm() {
     toast({ title: "Foto de capa definida!" });
   };
 
+  const handleSearchImages = async () => {
+    if (!form.nome_hotel.trim()) {
+      toast({ title: "Preencha o nome do hotel primeiro", variant: "destructive" });
+      return;
+    }
+    setSearching(true);
+    setSearchResults([]);
+    setSelectedResults(new Set());
+
+    try {
+      const { data, error } = await supabase.functions.invoke("search-hotel-images", {
+        body: { query: form.nome_hotel, num: 8 },
+      });
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Erro na busca");
+
+      setSearchResults(data.images || []);
+      if (data.images?.length === 0) {
+        toast({ title: "Nenhuma imagem encontrada para este hotel" });
+      } else {
+        toast({ title: `${data.images.length} imagens encontradas!` });
+      }
+    } catch (err: any) {
+      toast({ title: "Erro ao buscar imagens", description: err.message, variant: "destructive" });
+    }
+    setSearching(false);
+  };
+
+  const toggleResultSelection = (index: number) => {
+    setSelectedResults((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
+
+  const handleSaveSelectedImages = async () => {
+    if (!isEdit || selectedResults.size === 0) return;
+    setSavingSelected(true);
+
+    for (const index of selectedResults) {
+      const img = searchResults[index];
+      const { data: fotoData, error } = await supabase
+        .from("hotel_fotos")
+        .insert({
+          hotel_id: Number(id),
+          url: img.url,
+          legenda: img.title || null,
+          is_capa: fotos.length === 0 && index === Math.min(...selectedResults),
+          sort_order: fotos.length + index,
+        })
+        .select()
+        .single();
+
+      if (!error && fotoData) {
+        setFotos((prev) => [...prev, fotoData as unknown as HotelFoto]);
+      }
+    }
+
+    toast({ title: `${selectedResults.size} foto(s) adicionada(s)!` });
+    setSearchResults([]);
+    setSelectedResults(new Set());
+    setSavingSelected(false);
+  };
+
   const handleSave = async () => {
     if (!form.nome_hotel.trim()) {
       toast({ title: "Nome do hotel é obrigatório", variant: "destructive" });
