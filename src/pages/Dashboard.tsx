@@ -96,6 +96,9 @@ export default function Dashboard() {
             <Button variant="outline" size="sm" onClick={() => navigate("/hotels")} className="gap-2">
               <Hotel className="h-4 w-4" /> Hotéis
             </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate("/ingressos")} className="gap-2">
+              <Ticket className="h-4 w-4" /> Ingressos
+            </Button>
             <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" /> Sair
             </Button>

@@ -11,6 +11,8 @@ import QuoteEditor from "./pages/QuoteEditor";
 import PublicQuote from "./pages/PublicQuote";
 import HotelsPage from "./pages/HotelsPage";
 import HotelForm from "./pages/HotelForm";
+import IngressosPage from "./pages/IngressosPage";
+import IngressoForm from "./pages/IngressoForm";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +64,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <HotelForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ingressos"
+              element={
+                <ProtectedRoute>
+                  <IngressosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ingressos/new"
+              element={
+                <ProtectedRoute>
+                  <IngressoForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ingressos/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <IngressoForm />
                 </ProtectedRoute>
               }
             />
