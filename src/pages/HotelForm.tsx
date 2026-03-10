@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, Hotel } from "lucide-react";
+import { ArrowLeft, Save, Hotel, Upload, Trash2, Star, ImagePlus, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const MARCAS = ["Hilton", "Marriott", "Rosen", "Disney", "Universal", "Independente", "Outra"];
@@ -46,6 +46,15 @@ type FormData = {
   telefone: string;
   email_reservas: string;
   observacoes: string;
+};
+
+type HotelFoto = {
+  id: string;
+  hotel_id: number;
+  url: string;
+  legenda: string | null;
+  is_capa: boolean;
+  sort_order: number;
 };
 
 const emptyForm: FormData = {
@@ -81,52 +90,147 @@ export default function HotelForm() {
   const [form, setForm] = useState<FormData>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEdit);
+  const [fotos, setFotos] = useState<HotelFoto[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+  const [legendaInput, setLegendaInput] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isEdit) {
-      supabase
-        .from("hoteis_orlando")
-        .select("*")
-        .eq("id", Number(id))
-        .single()
-        .then(({ data, error }) => {
-          if (error || !data) {
-            toast({ title: "Hotel não encontrado", variant: "destructive" });
-            navigate("/hotels");
-            return;
-          }
-          const d = data as any;
-          setForm({
-            nome_hotel: d.nome_hotel ?? "",
-            marca: d.marca ?? "",
-            categoria: d.categoria ?? "",
-            publico_brasileiro: d.publico_brasileiro ?? "",
-            regiao: d.regiao ?? "",
-            endereco: d.endereco ?? "",
-            cidade: d.cidade ?? "Orlando",
-            estado: d.estado ?? "FL",
-            cep: d.cep ?? "",
-            pais: d.pais ?? "Estados Unidos",
-            distancia_disney_km: d.distancia_disney_km?.toString() ?? "",
-            distancia_universal_km: d.distancia_universal_km?.toString() ?? "",
-            distancia_outlet_km: d.distancia_outlet_km?.toString() ?? "",
-            cafe_da_manha_incluso: d.cafe_da_manha_incluso ?? false,
-            estacionamento_tipo: d.estacionamento_tipo ?? "gratuito",
-            estacionamento_valor_diaria: d.estacionamento_valor_diaria?.toString() ?? "",
-            tipo_quarto_familia: d.tipo_quarto_familia ?? "",
-            idiomas_staff: d.idiomas_staff ?? "",
-            site_oficial: d.site_oficial ?? "",
-            telefone: d.telefone ?? "",
-            email_reservas: d.email_reservas ?? "",
-            observacoes: d.observacoes ?? "",
-          });
-          setLoading(false);
+      Promise.all([
+        supabase.from("hoteis_orlando").select("*").eq("id", Number(id)).single(),
+        supabase.from("hotel_fotos").select("*").eq("hotel_id", Number(id)).order("sort_order"),
+      ]).then(([hotelRes, fotosRes]) => {
+        if (hotelRes.error || !hotelRes.data) {
+          toast({ title: "Hotel não encontrado", variant: "destructive" });
+          navigate("/hotels");
+          return;
+        }
+        const d = hotelRes.data as any;
+        setForm({
+          nome_hotel: d.nome_hotel ?? "",
+          marca: d.marca ?? "",
+          categoria: d.categoria ?? "",
+          publico_brasileiro: d.publico_brasileiro ?? "",
+          regiao: d.regiao ?? "",
+          endereco: d.endereco ?? "",
+          cidade: d.cidade ?? "Orlando",
+          estado: d.estado ?? "FL",
+          cep: d.cep ?? "",
+          pais: d.pais ?? "Estados Unidos",
+          distancia_disney_km: d.distancia_disney_km?.toString() ?? "",
+          distancia_universal_km: d.distancia_universal_km?.toString() ?? "",
+          distancia_outlet_km: d.distancia_outlet_km?.toString() ?? "",
+          cafe_da_manha_incluso: d.cafe_da_manha_incluso ?? false,
+          estacionamento_tipo: d.estacionamento_tipo ?? "gratuito",
+          estacionamento_valor_diaria: d.estacionamento_valor_diaria?.toString() ?? "",
+          tipo_quarto_familia: d.tipo_quarto_familia ?? "",
+          idiomas_staff: d.idiomas_staff ?? "",
+          site_oficial: d.site_oficial ?? "",
+          telefone: d.telefone ?? "",
+          email_reservas: d.email_reservas ?? "",
+          observacoes: d.observacoes ?? "",
         });
+        setFotos((fotosRes.data as unknown as HotelFoto[]) || []);
+        setLoading(false);
+      });
     }
   }, [id]);
 
   const set = (key: keyof FormData, value: string | boolean) =>
     setForm((prev) => ({ ...prev, [key]: value }));
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isEdit || !e.target.files?.length) return;
+    setUploading(true);
+
+    const files = Array.from(e.target.files);
+    for (const file of files) {
+      const ext = file.name.split(".").pop();
+      const path = `hotel-${id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("hotel-fotos")
+        .upload(path, file);
+
+      if (uploadError) {
+        toast({ title: "Erro ao fazer upload", description: uploadError.message, variant: "destructive" });
+        continue;
+      }
+
+      const { data: urlData } = supabase.storage.from("hotel-fotos").getPublicUrl(path);
+
+      const { data: fotoData, error: insertError } = await supabase
+        .from("hotel_fotos")
+        .insert({
+          hotel_id: Number(id),
+          url: urlData.publicUrl,
+          legenda: legendaInput || null,
+          is_capa: fotos.length === 0,
+          sort_order: fotos.length,
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        toast({ title: "Erro ao salvar foto", description: insertError.message, variant: "destructive" });
+      } else if (fotoData) {
+        setFotos((prev) => [...prev, fotoData as unknown as HotelFoto]);
+      }
+    }
+
+    setUploading(false);
+    setLegendaInput("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleAddUrl = async () => {
+    if (!isEdit || !urlInput.trim()) return;
+    setUploading(true);
+
+    const { data: fotoData, error } = await supabase
+      .from("hotel_fotos")
+      .insert({
+        hotel_id: Number(id),
+        url: urlInput.trim(),
+        legenda: legendaInput || null,
+        is_capa: fotos.length === 0,
+        sort_order: fotos.length,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast({ title: "Erro ao adicionar foto", description: error.message, variant: "destructive" });
+    } else if (fotoData) {
+      setFotos((prev) => [...prev, fotoData as unknown as HotelFoto]);
+      toast({ title: "Foto adicionada!" });
+    }
+
+    setUrlInput("");
+    setLegendaInput("");
+    setUploading(false);
+  };
+
+  const handleDeleteFoto = async (foto: HotelFoto) => {
+    const { error } = await supabase.from("hotel_fotos").delete().eq("id", foto.id);
+    if (error) {
+      toast({ title: "Erro ao excluir foto", description: error.message, variant: "destructive" });
+    } else {
+      setFotos((prev) => prev.filter((f) => f.id !== foto.id));
+    }
+  };
+
+  const handleSetCapa = async (fotoId: string) => {
+    // Unset all, then set the selected one
+    await supabase.from("hotel_fotos").update({ is_capa: false }).eq("hotel_id", Number(id));
+    await supabase.from("hotel_fotos").update({ is_capa: true }).eq("id", fotoId);
+    setFotos((prev) =>
+      prev.map((f) => ({ ...f, is_capa: f.id === fotoId }))
+    );
+    toast({ title: "Foto de capa definida!" });
+  };
 
   const handleSave = async () => {
     if (!form.nome_hotel.trim()) {
@@ -262,6 +366,139 @@ export default function HotelForm() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Fotos do Hotel - Only show for edit mode */}
+          {isEdit && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ImagePlus className="h-5 w-5" /> Fotos do Hotel
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                {/* Existing photos grid */}
+                {fotos.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {fotos.map((foto) => (
+                      <div key={foto.id} className="group relative overflow-hidden rounded-lg border">
+                        <img
+                          src={foto.url}
+                          alt={foto.legenda || "Foto do hotel"}
+                          className="aspect-[4/3] w-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/placeholder.svg";
+                          }}
+                        />
+                        {foto.is_capa && (
+                          <div className="absolute left-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
+                            ⭐ Capa
+                          </div>
+                        )}
+                        {foto.legenda && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-xs text-white">
+                            {foto.legenda}
+                          </div>
+                        )}
+                        <div className="absolute right-1 top-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                          {!foto.is_capa && (
+                            <Button
+                              size="icon"
+                              variant="secondary"
+                              className="h-7 w-7"
+                              onClick={() => handleSetCapa(foto.id)}
+                              title="Definir como capa"
+                            >
+                              <Star className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            className="h-7 w-7"
+                            onClick={() => handleDeleteFoto(foto)}
+                            title="Excluir foto"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {fotos.length === 0 && (
+                  <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-8 text-muted-foreground">
+                    <ImagePlus className="mb-2 h-8 w-8" />
+                    <p className="text-sm">Nenhuma foto adicionada</p>
+                  </div>
+                )}
+
+                {/* Legenda input shared */}
+                <div className="grid gap-2">
+                  <Label>Legenda (opcional)</Label>
+                  <Input
+                    value={legendaInput}
+                    onChange={(e) => setLegendaInput(e.target.value)}
+                    placeholder="Ex: Vista da piscina, Lobby, Quarto família..."
+                  />
+                </div>
+
+                {/* Upload file */}
+                <div className="flex gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex-1 gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {uploading ? "Enviando..." : "Upload de Fotos"}
+                  </Button>
+                </div>
+
+                {/* Add by URL */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <LinkIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      placeholder="Colar URL da imagem..."
+                      className="pl-10"
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={handleAddUrl}
+                    disabled={uploading || !urlInput.trim()}
+                  >
+                    Adicionar
+                  </Button>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Faça upload de fotos do seu computador ou cole URLs de imagens dos hotéis. A primeira foto será definida como capa automaticamente.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {!isEdit && (
+            <Card className="border-dashed">
+              <CardContent className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
+                <ImagePlus className="h-5 w-5 shrink-0" />
+                <span>Salve o hotel primeiro para adicionar fotos.</span>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Localização */}
           <Card>
