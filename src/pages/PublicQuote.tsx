@@ -373,7 +373,7 @@ export default function PublicQuote() {
         <div className="pt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Plane className="h-4 w-4" />
-            Lovable Travel
+            Orlando Fast Pass
           </div>
         </div>
       </div>
