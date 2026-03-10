@@ -447,47 +447,72 @@ export default function PublicQuote() {
               );
             })}
 
-            {/* ── TOTAL ── */}
-            <FadeInSection delay={0.3}>
-              <motion.div whileInView={{ scale: [0.97, 1] }} viewport={{ once: true }}>
-                <Card className="overflow-hidden rounded-2xl glow-accent border-accent/25 bg-gradient-to-br from-accent/10 via-transparent to-accent/5 backdrop-blur-md">
-                  <CardContent className="p-6 space-y-3">
-                    <div className="flex justify-between text-sm text-white/60">
-                      <span>Subtotal</span>
-                      <span>R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                    </div>
-                    {quote.discount > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-success flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" /> Desconto mágico
-                        </span>
-                        <span className="text-success font-medium">
-                          - R$ {quote.discount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                        </span>
-                      </div>
-                    )}
-                    <Separator className="bg-white/10" />
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <p className="text-sm text-white/50">Investimento total</p>
-                        <motion.p
-                          className="text-3xl sm:text-4xl font-display font-bold bg-gradient-to-r from-accent via-[hsl(40,100%,65%)] to-accent bg-clip-text text-transparent mt-1"
-                          whileInView={{ scale: [0.8, 1.05, 1] }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                        >
-                          R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                        </motion.p>
-                      </div>
-                      {quote.installment_count > 1 && total > 0 && (
-                        <div className="text-right">
-                          <p className="text-white/50 text-xs">ou parcelado em</p>
-                          <p className="text-white font-semibold text-lg">
-                            {quote.installment_count}x <span className="text-accent">R$ {(total / quote.installment_count).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                          </p>
+            {/* ── TOTAL — DESTAQUE PRINCIPAL ── */}
+            <FadeInSection delay={0.2}>
+              <motion.div
+                whileInView={{ scale: [0.95, 1] }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="relative rounded-3xl overflow-hidden">
+                  {/* Animated border glow */}
+                  <div className="absolute -inset-[1px] magic-gradient rounded-3xl opacity-60" />
+                  <div className="absolute -inset-[1px] magic-gradient rounded-3xl opacity-30 blur-md" />
+                  
+                  <Card className="relative overflow-hidden rounded-3xl border-0 bg-[hsl(220,30%,8%)]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/8 via-transparent to-accent/5" />
+                    <MagicParticles />
+                    <CardContent className="relative p-8 sm:p-10 space-y-4">
+                      {/* Small details */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm text-white/50">
+                          <span>Subtotal</span>
+                          <span>R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                         </div>
-                      )}
-                    </div>
+                        {quote.discount > 0 && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-success flex items-center gap-1">
+                              <Sparkles className="h-3 w-3" /> Desconto mágico
+                            </span>
+                            <span className="text-success font-medium">
+                              - R$ {quote.discount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <Separator className="bg-white/10" />
+
+                      {/* Main total */}
+                      <div className="text-center pt-2 pb-2">
+                        <p className="text-sm text-white/50 mb-2 uppercase tracking-widest font-medium">Investimento total</p>
+                        <motion.div
+                          whileInView={{ scale: [0.7, 1.08, 1] }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          <p className="text-5xl sm:text-6xl font-display font-bold bg-gradient-to-r from-accent via-[hsl(40,100%,70%)] to-accent bg-clip-text text-transparent leading-none">
+                            R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                          </p>
+                        </motion.div>
+                        {quote.installment_count > 1 && total > 0 && (
+                          <motion.p
+                            className="mt-3 text-white/60 text-base"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.5 }}
+                          >
+                            ou <span className="font-semibold text-white text-lg">{quote.installment_count}x</span>{" "}
+                            de <span className="font-bold text-accent text-xl">R$ {(total / quote.installment_count).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                          </motion.p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </motion.div>
+            </FadeInSection>
                   </CardContent>
                 </Card>
               </motion.div>
