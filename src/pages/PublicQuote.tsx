@@ -102,9 +102,9 @@ export default function PublicQuote() {
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
             <Plane className="h-10 w-10 text-accent/60" />
           </div>
-          <h1 className="font-display text-2xl font-bold text-white">Orçamento não encontrado</h1>
+          <h1 className="font-display text-2xl font-bold text-white">Proposta não encontrada</h1>
           <p className="mt-3 text-white/50 max-w-sm mx-auto">
-            Este orçamento pode ter expirado ou não estar mais disponível. Entre em contato com seu agente.
+            Esta proposta pode ter expirado ou não estar mais disponível. Entre em contato com seu agente.
           </p>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default function PublicQuote() {
           </div>
 
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-white leading-snug">
-            {quote.title} ✨
+            Proposta Mágica ✨
           </h1>
           {quote.client_name && (
             <p className="mt-1.5 text-sm text-white/80">
@@ -308,7 +308,7 @@ export default function PublicQuote() {
             )}
             {quote.client_email && (
               <Button asChild size="lg" className="gap-2 glass-card text-white hover:bg-white/10 rounded-xl text-base px-8 h-12 border-white/20">
-                <a href={`mailto:${quote.client_email}?subject=Orçamento ${quote.title}&body=Olá, gostaria de fechar o orçamento "${quote.title}".`}>
+                <a href={`mailto:${quote.client_email}?subject=Proposta Mágica - ${quote.title}&body=Olá, gostaria de fechar a proposta "${quote.title}".`}>
                   <Mail className="h-5 w-5" /> Enviar email
                 </a>
               </Button>
