@@ -46,6 +46,7 @@ interface Props {
 export function AIExtractModal({ open, onClose, onConfirm }: Props) {
   const [imageUrl, setImageUrl] = useState("");
   const [cartUrl, setCartUrl] = useState("");
+  const [cartText, setCartText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [extracting, setExtracting] = useState(false);
   const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
@@ -55,6 +56,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
   const reset = () => {
     setImageUrl("");
     setCartUrl("");
+    setCartText("");
     setFile(null);
     setExtractedItems([]);
     setStep("input");
@@ -128,8 +130,13 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
     try {
       let payload: { image_url?: string; file_path?: string; cart_url?: string } = {};
 
-      if (cartUrl) {
-        payload.cart_url = cartUrl;
+      if (cartUrl || cartText) {
+        // Combine URL and pasted text
+        let combinedCart = cartUrl || "";
+        if (cartText) {
+          combinedCart = combinedCart ? `${combinedCart}\n\n${cartText}` : cartText;
+        }
+        payload.cart_url = combinedCart;
       } else if (file) {
         // Upload to storage
         const ext = file.name.split(".").pop();
@@ -233,15 +240,26 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
                   <Upload className="h-4 w-4" /> Arquivo
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="cart" className="mt-4 space-y-2">
-                <Label>URL do carrinho / checkout</Label>
-                <Input
-                  value={cartUrl}
-                  onChange={(e) => setCartUrl(e.target.value)}
-                  placeholder="https://reservas.orlandofastpass.com.br/pt/checkout/..."
-                />
+              <TabsContent value="cart" className="mt-4 space-y-3">
+                <div className="space-y-2">
+                  <Label>URL do carrinho / checkout (opcional)</Label>
+                  <Input
+                    value={cartUrl}
+                    onChange={(e) => setCartUrl(e.target.value)}
+                    placeholder="https://reservas.orlandofastpass.com.br/pt/checkout/..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Conteúdo do carrinho (cole aqui o texto com preços)</Label>
+                  <Textarea
+                    value={cartText}
+                    onChange={(e) => setCartText(e.target.value)}
+                    placeholder={"Copie e cole o conteúdo do carrinho aqui, incluindo:\n- Nomes dos produtos\n- Preços (R$ ou US$)\n- Quantidades\n- Datas\n\nEx:\nDisney 4 Parks Magic Ticket [4 dias]\nR$ 1.890,00\n1 Adulto - 11/03/2026"}
+                    className="min-h-[120px] text-sm"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Cole o link do carrinho ou checkout do seu site de reservas para importar os itens automaticamente.
+                  Cole o link e/ou o texto do carrinho com os preços que aparecem na tela.
                 </p>
               </TabsContent>
               <TabsContent value="url" className="mt-4 space-y-2">
@@ -270,7 +288,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
 
             <Button
               onClick={extract}
-              disabled={extracting || (!imageUrl && !file && !cartUrl)}
+              disabled={extracting || (!imageUrl && !file && !cartUrl && !cartText)}
               className="w-full gap-2"
             >
               {extracting ? (
