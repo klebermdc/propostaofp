@@ -131,6 +131,14 @@ export default function PublicQuote() {
     if (shareToken) fetchQuote();
   }, [shareToken]);
 
+  useEffect(() => {
+    if (quote) {
+      const clientPart = quote.client_name ? ` para ${quote.client_name}` : "";
+      document.title = `${quote.title}${clientPart} — Orlando Fast Pass`;
+    }
+    return () => { document.title = "Orlando Fast Pass — Sua viagem dos sonhos"; };
+  }, [quote]);
+
   const fetchQuote = async () => {
     const { data: quoteData, error } = await supabase
       .from("quotes")
@@ -223,7 +231,7 @@ export default function PublicQuote() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/20">
               <Plane className="h-5 w-5" />
             </div>
-            <span className="font-display text-lg font-bold">Lovable Travel</span>
+            <span className="font-display text-lg font-bold">Orlando Fast Pass</span>
           </div>
           <h1 className="font-display text-3xl font-bold sm:text-4xl">{quote.title}</h1>
           {quote.client_name && (
@@ -365,7 +373,7 @@ export default function PublicQuote() {
         <div className="pt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Plane className="h-4 w-4" />
-            Lovable Travel
+            Orlando Fast Pass
           </div>
         </div>
       </div>
