@@ -116,6 +116,7 @@ export default function QuoteEditor() {
   useEffect(() => {
     if (id) fetchQuote();
     fetchHotels();
+    fetchTickets();
   }, [id]);
 
   const fetchHotels = async () => {
