@@ -231,7 +231,7 @@ export default function PublicQuote() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/20">
               <Plane className="h-5 w-5" />
             </div>
-            <span className="font-display text-lg font-bold">Lovable Travel</span>
+            <span className="font-display text-lg font-bold">Orlando Fast Pass</span>
           </div>
           <h1 className="font-display text-3xl font-bold sm:text-4xl">{quote.title}</h1>
           {quote.client_name && (
