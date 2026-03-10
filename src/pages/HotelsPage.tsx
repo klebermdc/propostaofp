@@ -273,6 +273,7 @@ export default function HotelsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">Foto</TableHead>
                   <TableHead>Hotel</TableHead>
                   <TableHead>Região</TableHead>
                   <TableHead>Categoria</TableHead>
