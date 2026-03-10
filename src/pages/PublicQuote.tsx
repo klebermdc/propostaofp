@@ -132,57 +132,46 @@ export default function PublicQuote() {
 
   return (
     <div className="min-h-screen bg-[hsl(30,30%,4%)] text-white">
-      {/* Floating sparkle particles (CSS) */}
+      {/* Global styles */}
       <style>{`
-        @keyframes float { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-20px) scale(1.1)} }
-        @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:1} }
-        .sparkle-bg { position:relative; overflow:hidden; }
-        .sparkle-bg::before { content:'✨'; position:absolute; top:20%; left:10%; font-size:1.5rem; animation:float 6s ease-in-out infinite, twinkle 3s ease-in-out infinite; opacity:0.3; }
-        .sparkle-bg::after { content:'🏰'; position:absolute; top:30%; right:8%; font-size:2rem; animation:float 8s ease-in-out infinite 1s, twinkle 4s ease-in-out infinite 0.5s; opacity:0.2; }
+        @keyframes sparkle-drift { 0%{transform:translateY(0) rotate(0deg);opacity:0} 20%{opacity:1} 100%{transform:translateY(-40px) rotate(180deg);opacity:0} }
         .magic-gradient { background: linear-gradient(135deg, hsl(25,90%,48%) 0%, hsl(35,95%,55%) 50%, hsl(30,85%,50%) 100%); }
-        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); }
         .glow-accent { box-shadow: 0 0 30px hsl(32,95%,52%,0.3), 0 0 60px hsl(32,95%,52%,0.1); }
       `}</style>
 
-      {/* Hero */}
-      <div className="sparkle-bg magic-gradient px-4 pb-20 pt-14 relative">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoLTZ2LTRIMTZ2LTZoNnYtNmg2djZoNnY2aC02eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
+      {/* Compact Hero */}
+      <div className="magic-gradient px-4 pb-12 pt-8 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.07]" style={{backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 30%, white 1px, transparent 1px), radial-gradient(circle at 50% 80%, white 1.5px, transparent 1.5px)', backgroundSize: '60px 60px, 80px 80px, 100px 100px'}} />
         <div className="mx-auto max-w-3xl relative z-10">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
-              <Plane className="h-6 w-6 text-white" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+                <Plane className="h-4.5 w-4.5 text-white" />
+              </div>
+              <span className="font-display text-base font-bold tracking-tight text-white">Orlando Fast Pass</span>
             </div>
-            <div>
-              <span className="font-display text-xl font-bold tracking-tight">Orlando Fast Pass</span>
-              <p className="text-white/70 text-xs font-medium">Sua viagem dos sonhos começa aqui ✨</p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-3 py-1">
-              <Sparkles className="h-3 w-3 mr-1" /> Proposta Exclusiva
-            </Badge>
-            <h1 className="font-display text-3xl sm:text-5xl font-bold leading-tight drop-shadow-lg">
-              {quote.title}
-            </h1>
-            {quote.client_name && (
-              <p className="text-xl text-white/90 font-medium">
-                Preparada especialmente para <span className="underline decoration-white/40 decoration-2 underline-offset-4">{quote.client_name}</span> 🎉
-              </p>
+            {quote.valid_until && (
+              <div className="flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1 text-xs text-white/80">
+                <Clock className="h-3 w-3" />
+                Até {new Date(quote.valid_until).toLocaleDateString("pt-BR")}
+              </div>
             )}
           </div>
 
-          {quote.valid_until && (
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-2 text-sm text-white/90">
-              <Clock className="h-4 w-4" />
-              Válido até {new Date(quote.valid_until).toLocaleDateString("pt-BR")}
-            </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white leading-snug">
+            {quote.title} ✨
+          </h1>
+          {quote.client_name && (
+            <p className="mt-1.5 text-sm text-white/80">
+              Preparada para <span className="font-semibold text-white">{quote.client_name}</span>
+            </p>
           )}
         </div>
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-3xl px-4 -mt-10 pb-16 space-y-6 relative z-10">
+      <div className="mx-auto max-w-3xl px-4 -mt-4 pb-16 space-y-5 relative z-10">
 
         {/* Trust badges */}
         <div className="glass-card rounded-2xl p-4 flex flex-wrap justify-center gap-4 sm:gap-8 text-center">
