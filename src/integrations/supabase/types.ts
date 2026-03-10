@@ -283,6 +283,7 @@ export type Database = {
           currency: string
           discount: number
           id: string
+          installment_count: number
           notes: string | null
           share_token: string
           status: Database["public"]["Enums"]["quote_status"]
@@ -299,6 +300,7 @@ export type Database = {
           currency?: string
           discount?: number
           id?: string
+          installment_count?: number
           notes?: string | null
           share_token?: string
           status?: Database["public"]["Enums"]["quote_status"]
@@ -315,6 +317,7 @@ export type Database = {
           currency?: string
           discount?: number
           id?: string
+          installment_count?: number
           notes?: string | null
           share_token?: string
           status?: Database["public"]["Enums"]["quote_status"]
