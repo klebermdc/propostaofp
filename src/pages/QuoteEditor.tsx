@@ -134,6 +134,36 @@ export default function QuoteEditor() {
     }
   };
 
+  const fetchTickets = async () => {
+    const { data } = await supabase
+      .from("ingressos_orlando")
+      .select("id, nome_ingresso, grupo, categoria, dias_validade, inclui_refeicao, preco_adulto, preco_crianca, observacoes")
+      .order("grupo")
+      .order("nome_ingresso");
+    if (data) setTickets(data as unknown as TicketOption[]);
+  };
+
+  const selectTicketForItem = (itemId: string, ticketId: number) => {
+    const ticket = tickets.find((t) => t.id === ticketId);
+    if (!ticket) return;
+    const details = [
+      ticket.grupo && `Grupo: ${ticket.grupo}`,
+      ticket.categoria && `Categoria: ${ticket.categoria}`,
+      ticket.dias_validade && `Validade: ${ticket.dias_validade} dia(s)`,
+      ticket.inclui_refeicao ? "Refeição inclusa" : null,
+      ticket.preco_adulto && `Adulto: R$ ${ticket.preco_adulto}`,
+      ticket.preco_crianca && `Criança: R$ ${ticket.preco_crianca}`,
+    ].filter(Boolean).join(" | ");
+
+    updateItem(itemId, {
+      description: ticket.nome_ingresso,
+      item_type: "ticket" as QuoteItemType,
+      observations: details,
+      metadata: { ticket_id: ticket.id, ticket_nome: ticket.nome_ingresso } as any,
+      ...(ticket.preco_adulto ? { unit_price: Number(ticket.preco_adulto) } : {}),
+    });
+  };
+
   const selectHotelForItem = (itemId: string, hotelId: number) => {
     const hotel = hotels.find((h) => h.id === hotelId);
     if (!hotel) return;
