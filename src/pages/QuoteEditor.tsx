@@ -101,7 +101,42 @@ export default function QuoteEditor() {
 
   useEffect(() => {
     if (id) fetchQuote();
+    fetchHotels();
   }, [id]);
+
+  const fetchHotels = async () => {
+    const [hotelsRes, coversRes] = await Promise.all([
+      supabase.from("hoteis_orlando").select("id, nome_hotel, marca, regiao, categoria, cafe_da_manha_incluso, estacionamento_tipo, tipo_quarto_familia, publico_brasileiro").order("nome_hotel"),
+      supabase.from("hotel_fotos").select("hotel_id, url").eq("is_capa", true),
+    ]);
+    if (hotelsRes.data) {
+      setHotels(hotelsRes.data as unknown as HotelOption[]);
+    }
+    if (coversRes.data) {
+      const covers: Record<number, string> = {};
+      for (const f of coversRes.data as any[]) covers[f.hotel_id] = f.url;
+      setHotelCovers(covers);
+    }
+  };
+
+  const selectHotelForItem = (itemId: string, hotelId: number) => {
+    const hotel = hotels.find((h) => h.id === hotelId);
+    if (!hotel) return;
+    const details = [
+      hotel.regiao && `Região: ${hotel.regiao}`,
+      hotel.categoria && `Categoria: ${hotel.categoria}`,
+      hotel.cafe_da_manha_incluso ? "Café da manhã incluso" : null,
+      hotel.estacionamento_tipo && `Estacionamento: ${hotel.estacionamento_tipo}`,
+      hotel.tipo_quarto_familia && `Quarto: ${hotel.tipo_quarto_familia}`,
+    ].filter(Boolean).join(" | ");
+
+    updateItem(itemId, {
+      description: `${hotel.nome_hotel}${hotel.marca ? ` (${hotel.marca})` : ""}`,
+      item_type: "hotel" as QuoteItemType,
+      observations: details,
+      metadata: { hotel_id: hotel.id, hotel_nome: hotel.nome_hotel } as any,
+    });
+  };
 
   const fetchQuote = async () => {
     const [quoteRes, itemsRes] = await Promise.all([
