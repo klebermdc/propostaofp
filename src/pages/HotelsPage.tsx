@@ -78,6 +78,7 @@ export default function HotelsPage() {
   const [regiaoFilter, setRegiaoFilter] = useState("all");
   const [categoriaFilter, setCategoriaFilter] = useState("all");
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [coverPhotos, setCoverPhotos] = useState<Record<number, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -86,16 +87,25 @@ export default function HotelsPage() {
   }, []);
 
   const fetchHotels = async () => {
-    const { data, error } = await supabase
-      .from("hoteis_orlando")
-      .select("*")
-      .order("nome_hotel");
+    const [hotelsRes, fotosRes] = await Promise.all([
+      supabase.from("hoteis_orlando").select("*").order("nome_hotel"),
+      supabase.from("hotel_fotos").select("*").eq("is_capa", true),
+    ]);
 
-    if (error) {
-      toast({ title: "Erro ao carregar hotéis", description: error.message, variant: "destructive" });
+    if (hotelsRes.error) {
+      toast({ title: "Erro ao carregar hotéis", description: hotelsRes.error.message, variant: "destructive" });
     } else {
-      setHotels((data as unknown as HotelOrlando[]) || []);
+      setHotels((hotelsRes.data as unknown as HotelOrlando[]) || []);
     }
+
+    if (fotosRes.data) {
+      const covers: Record<number, string> = {};
+      for (const foto of fotosRes.data as any[]) {
+        covers[foto.hotel_id] = foto.url;
+      }
+      setCoverPhotos(covers);
+    }
+
     setLoading(false);
   };
 
