@@ -551,9 +551,15 @@ export default function QuoteEditor() {
               </div>
             )}
             <div className="mt-2 flex items-center justify-between border-t pt-2 text-lg font-bold">
-              <span>Total</span>
+              <span>Total à vista</span>
               <span>R$ {total.toFixed(2)}</span>
             </div>
+            {installmentCount > 1 && total > 0 && (
+              <div className="mt-1 flex items-center justify-between text-sm text-muted-foreground">
+                <span>ou {installmentCount}x de</span>
+                <span>R$ {(total / installmentCount).toFixed(2)}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
 
