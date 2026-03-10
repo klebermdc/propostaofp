@@ -131,6 +131,14 @@ export default function PublicQuote() {
     if (shareToken) fetchQuote();
   }, [shareToken]);
 
+  useEffect(() => {
+    if (quote) {
+      const clientPart = quote.client_name ? ` para ${quote.client_name}` : "";
+      document.title = `${quote.title}${clientPart} — Orlando Fast Pass`;
+    }
+    return () => { document.title = "Orlando Fast Pass — Sua viagem dos sonhos"; };
+  }, [quote]);
+
   const fetchQuote = async () => {
     const { data: quoteData, error } = await supabase
       .from("quotes")
