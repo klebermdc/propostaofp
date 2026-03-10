@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, Plane, LogOut, FileText, Clock, CheckCircle, Send } from "lucide-react";
+import { Plus, Search, Plane, LogOut, FileText, Clock, CheckCircle, Send, Hotel } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -92,9 +92,14 @@ export default function Dashboard() {
             </div>
             <span className="font-display text-lg font-bold">Lovable Travel</span>
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" /> Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate("/hotels")} className="gap-2">
+              <Hotel className="h-4 w-4" /> Hotéis
+            </Button>
+            <Button variant="ghost" size="sm" onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4" /> Sair
+            </Button>
+          </div>
         </div>
       </header>
 

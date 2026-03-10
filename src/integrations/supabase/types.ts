@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      hoteis_orlando: {
+        Row: {
+          cafe_da_manha_incluso: boolean | null
+          categoria: string
+          cep: string | null
+          cidade: string
+          created_at: string
+          distancia_disney_km: number | null
+          distancia_outlet_km: number | null
+          distancia_universal_km: number | null
+          email_reservas: string | null
+          endereco: string | null
+          estacionamento_tipo: string | null
+          estacionamento_valor_diaria: number | null
+          estado: string
+          id: number
+          idiomas_staff: string | null
+          marca: string | null
+          nome_hotel: string
+          observacoes: string | null
+          pais: string
+          publico_brasileiro: string
+          regiao: string
+          site_oficial: string | null
+          telefone: string | null
+          tipo_quarto_familia: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cafe_da_manha_incluso?: boolean | null
+          categoria: string
+          cep?: string | null
+          cidade?: string
+          created_at?: string
+          distancia_disney_km?: number | null
+          distancia_outlet_km?: number | null
+          distancia_universal_km?: number | null
+          email_reservas?: string | null
+          endereco?: string | null
+          estacionamento_tipo?: string | null
+          estacionamento_valor_diaria?: number | null
+          estado?: string
+          id?: number
+          idiomas_staff?: string | null
+          marca?: string | null
+          nome_hotel: string
+          observacoes?: string | null
+          pais?: string
+          publico_brasileiro: string
+          regiao: string
+          site_oficial?: string | null
+          telefone?: string | null
+          tipo_quarto_familia?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          cafe_da_manha_incluso?: boolean | null
+          categoria?: string
+          cep?: string | null
+          cidade?: string
+          created_at?: string
+          distancia_disney_km?: number | null
+          distancia_outlet_km?: number | null
+          distancia_universal_km?: number | null
+          email_reservas?: string | null
+          endereco?: string | null
+          estacionamento_tipo?: string | null
+          estacionamento_valor_diaria?: number | null
+          estado?: string
+          id?: number
+          idiomas_staff?: string | null
+          marca?: string | null
+          nome_hotel?: string
+          observacoes?: string | null
+          pais?: string
+          publico_brasileiro?: string
+          regiao?: string
+          site_oficial?: string | null
+          telefone?: string | null
+          tipo_quarto_familia?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
