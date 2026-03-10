@@ -26,6 +26,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft,
@@ -36,7 +49,11 @@ import {
   Link as LinkIcon,
   Copy,
   Sparkles,
+  Hotel,
+  ChevronsUpDown,
+  Check,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { itemTypeConfig, itemTypes } from "@/lib/quote-item-types";
 import { AIExtractModal } from "@/components/AIExtractModal";
 import type { Database } from "@/integrations/supabase/types";
@@ -45,6 +62,19 @@ type Quote = Database["public"]["Tables"]["quotes"]["Row"];
 type QuoteItem = Database["public"]["Tables"]["quote_items"]["Row"];
 type QuoteItemInsert = Database["public"]["Tables"]["quote_items"]["Insert"];
 type QuoteItemType = Database["public"]["Enums"]["quote_item_type"];
+
+type HotelOption = {
+  id: number;
+  nome_hotel: string;
+  marca: string | null;
+  regiao: string;
+  categoria: string;
+  cafe_da_manha_incluso: boolean | null;
+  estacionamento_tipo: string | null;
+  tipo_quarto_familia: string | null;
+  publico_brasileiro: string;
+  cover_url?: string;
+};
 
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
