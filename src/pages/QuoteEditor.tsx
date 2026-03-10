@@ -669,3 +669,71 @@ function HotelSelector({
     </Popover>
   );
 }
+
+function TicketSelector({
+  tickets,
+  selectedTicketId,
+  onSelect,
+}: {
+  tickets: TicketOption[];
+  selectedTicketId: number | null;
+  onSelect: (ticketId: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = tickets.find((t) => t.id === selectedTicketId);
+  const groups = [...new Set(tickets.map((t) => t.grupo))];
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between h-9 text-sm">
+          {selected ? (
+            <div className="flex items-center gap-2 truncate">
+              <Ticket className="h-3.5 w-3.5 shrink-0 text-primary" />
+              <span className="truncate">{selected.nome_ingresso}</span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{selected.grupo}</Badge>
+            </div>
+          ) : (
+            <span className="text-muted-foreground">Selecionar ingresso cadastrado...</span>
+          )}
+          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Buscar ingresso..." />
+          <CommandList>
+            <CommandEmpty>Nenhum ingresso encontrado.</CommandEmpty>
+            {groups.map((grupo) => (
+              <CommandGroup key={grupo} heading={grupo}>
+                {tickets
+                  .filter((t) => t.grupo === grupo)
+                  .map((ticket) => (
+                    <CommandItem
+                      key={ticket.id}
+                      value={`${ticket.nome_ingresso} ${ticket.grupo}`}
+                      onSelect={() => {
+                        onSelect(ticket.id);
+                        setOpen(false);
+                      }}
+                      className="flex items-center gap-3 py-2"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{ticket.nome_ingresso}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {ticket.dias_validade ? `${ticket.dias_validade} dia(s)` : ""}
+                          {ticket.preco_adulto ? ` · Adulto: R$ ${ticket.preco_adulto}` : ""}
+                          {ticket.inclui_refeicao ? " · Com refeição" : ""}
+                        </p>
+                      </div>
+                      <Check className={cn("h-4 w-4 shrink-0", selectedTicketId === ticket.id ? "opacity-100" : "opacity-0")} />
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
