@@ -21,10 +21,19 @@ serve(async (req) => {
     // If cart_url is provided, fetch the page HTML and send as text
     if (cart_url) {
       // The user may paste the URL with extra text (product info) after it
-      const decoded = decodeURIComponent(cart_url);
+      let decoded: string;
+      try {
+        decoded = decodeURIComponent(cart_url);
+      } catch {
+        decoded = cart_url; // Already decoded or plain text
+      }
       const lines = decoded.split('\n').map((l: string) => l.trim()).filter(Boolean);
-      const actualUrl = lines[0]; // First line is the URL
-      const extraText = lines.slice(1).join('\n'); // Remaining lines are product info
+      
+      // First line might be a URL, or everything might be plain text
+      const firstLine = lines[0];
+      const isUrl = firstLine.startsWith('http://') || firstLine.startsWith('https://');
+      const actualUrl = isUrl ? firstLine : null;
+      const extraText = isUrl ? lines.slice(1).join('\n') : lines.join('\n');
 
       console.log("Cart URL:", actualUrl);
       console.log("Extra text:", extraText);
