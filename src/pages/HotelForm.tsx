@@ -14,7 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, Hotel, Upload, Trash2, Star, ImagePlus, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, Save, Hotel, Upload, Trash2, Star, ImagePlus, Link as LinkIcon, SearchIcon, Check, Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
 const MARCAS = ["Hilton", "Marriott", "Rosen", "Disney", "Universal", "Independente", "Outra"];
@@ -95,6 +96,10 @@ export default function HotelForm() {
   const [urlInput, setUrlInput] = useState("");
   const [legendaInput, setLegendaInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [searchResults, setSearchResults] = useState<{ url: string; thumbnail: string; title: string }[]>([]);
+  const [selectedResults, setSelectedResults] = useState<Set<number>>(new Set());
+  const [searching, setSearching] = useState(false);
+  const [savingSelected, setSavingSelected] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -230,6 +235,73 @@ export default function HotelForm() {
       prev.map((f) => ({ ...f, is_capa: f.id === fotoId }))
     );
     toast({ title: "Foto de capa definida!" });
+  };
+
+  const handleSearchImages = async () => {
+    if (!form.nome_hotel.trim()) {
+      toast({ title: "Preencha o nome do hotel primeiro", variant: "destructive" });
+      return;
+    }
+    setSearching(true);
+    setSearchResults([]);
+    setSelectedResults(new Set());
+
+    try {
+      const { data, error } = await supabase.functions.invoke("search-hotel-images", {
+        body: { query: form.nome_hotel, num: 8 },
+      });
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Erro na busca");
+
+      setSearchResults(data.images || []);
+      if (data.images?.length === 0) {
+        toast({ title: "Nenhuma imagem encontrada para este hotel" });
+      } else {
+        toast({ title: `${data.images.length} imagens encontradas!` });
+      }
+    } catch (err: any) {
+      toast({ title: "Erro ao buscar imagens", description: err.message, variant: "destructive" });
+    }
+    setSearching(false);
+  };
+
+  const toggleResultSelection = (index: number) => {
+    setSelectedResults((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
+
+  const handleSaveSelectedImages = async () => {
+    if (!isEdit || selectedResults.size === 0) return;
+    setSavingSelected(true);
+
+    for (const index of selectedResults) {
+      const img = searchResults[index];
+      const { data: fotoData, error } = await supabase
+        .from("hotel_fotos")
+        .insert({
+          hotel_id: Number(id),
+          url: img.url,
+          legenda: img.title || null,
+          is_capa: fotos.length === 0 && index === Math.min(...selectedResults),
+          sort_order: fotos.length + index,
+        })
+        .select()
+        .single();
+
+      if (!error && fotoData) {
+        setFotos((prev) => [...prev, fotoData as unknown as HotelFoto]);
+      }
+    }
+
+    toast({ title: `${selectedResults.size} foto(s) adicionada(s)!` });
+    setSearchResults([]);
+    setSelectedResults(new Set());
+    setSavingSelected(false);
   };
 
   const handleSave = async () => {
@@ -484,8 +556,69 @@ export default function HotelForm() {
                   </Button>
                 </div>
 
+                {/* Divider */}
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">ou busque automaticamente</span></div>
+                </div>
+
+                {/* Auto-search button */}
+                <Button
+                  variant="default"
+                  onClick={handleSearchImages}
+                  disabled={searching || !form.nome_hotel.trim()}
+                  className="w-full gap-2"
+                >
+                  {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <SearchIcon className="h-4 w-4" />}
+                  {searching ? "Buscando fotos..." : "🔍 Buscar Fotos do Hotel (Google)"}
+                </Button>
+
+                {/* Search results grid */}
+                {searchResults.length > 0 && (
+                  <div className="grid gap-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">{searchResults.length} imagens encontradas — selecione as que deseja adicionar:</p>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveSelectedImages}
+                        disabled={selectedResults.size === 0 || savingSelected}
+                        className="gap-1"
+                      >
+                        {savingSelected ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                        Adicionar {selectedResults.size > 0 ? `(${selectedResults.size})` : ""}
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {searchResults.map((img, i) => (
+                        <div
+                          key={i}
+                          className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
+                            selectedResults.has(i) ? "border-primary ring-2 ring-primary/30" : "border-transparent hover:border-muted-foreground/30"
+                          }`}
+                          onClick={() => toggleResultSelection(i)}
+                        >
+                          <img
+                            src={img.thumbnail || img.url}
+                            alt={img.title}
+                            className="aspect-[4/3] w-full object-cover"
+                            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                          />
+                          {selectedResults.has(i) && (
+                            <div className="absolute left-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                              <Check className="h-3 w-3" />
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1.5 py-0.5 text-[10px] text-white line-clamp-1">
+                            {img.title || "Imagem"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-xs text-muted-foreground">
-                  Faça upload de fotos do seu computador ou cole URLs de imagens dos hotéis. A primeira foto será definida como capa automaticamente.
+                  Faça upload, cole URLs ou busque automaticamente fotos do hotel via Google Images (SerpAPI). A primeira foto será a capa.
                 </p>
               </CardContent>
             </Card>
