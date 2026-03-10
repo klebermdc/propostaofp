@@ -1,0 +1,1 @@
+ALTER TABLE public.quotes ADD COLUMN installment_count integer NOT NULL DEFAULT 10;

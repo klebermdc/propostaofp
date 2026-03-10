@@ -112,6 +112,7 @@ export default function QuoteEditor() {
   const [notes, setNotes] = useState("");
   const [validUntil, setValidUntil] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [installmentCount, setInstallmentCount] = useState(10);
 
   useEffect(() => {
     if (id) fetchQuote();
@@ -204,6 +205,7 @@ export default function QuoteEditor() {
     setNotes(q.notes || "");
     setValidUntil(q.valid_until || "");
     setDiscount(q.discount);
+    setInstallmentCount((q as any).installment_count ?? 10);
     setItems(itemsRes.data || []);
     setLoading(false);
   };
@@ -222,8 +224,9 @@ export default function QuoteEditor() {
         notes: notes || null,
         valid_until: validUntil || null,
         discount,
+        installment_count: installmentCount,
         ...(newStatus ? { status: newStatus } : {}),
-      })
+      } as any)
       .eq("id", id);
 
     if (error) {
@@ -512,6 +515,16 @@ export default function QuoteEditor() {
                 onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Parcelas (nº de vezes)</Label>
+              <Input
+                type="number"
+                min={1}
+                max={24}
+                value={installmentCount}
+                onChange={(e) => setInstallmentCount(parseInt(e.target.value) || 10)}
+              />
+            </div>
             <div className="space-y-2 sm:col-span-2">
               <Label>Notas gerais</Label>
               <Textarea
@@ -538,9 +551,15 @@ export default function QuoteEditor() {
               </div>
             )}
             <div className="mt-2 flex items-center justify-between border-t pt-2 text-lg font-bold">
-              <span>Total</span>
+              <span>Total à vista</span>
               <span>R$ {total.toFixed(2)}</span>
             </div>
+            {installmentCount > 1 && total > 0 && (
+              <div className="mt-1 flex items-center justify-between text-sm text-muted-foreground">
+                <span>ou {installmentCount}x de</span>
+                <span>R$ {(total / installmentCount).toFixed(2)}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
 

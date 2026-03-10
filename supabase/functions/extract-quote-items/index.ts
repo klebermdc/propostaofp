@@ -63,14 +63,23 @@ serve(async (req) => {
       contentParts.push({
         type: "text",
         text: `Analise o conteúdo abaixo de um carrinho/checkout de um site de venda de ingressos e passeios para Orlando.
-Extraia TODOS os itens encontrados.
+Extraia TODOS os itens encontrados. É ESSENCIAL extrair:
+- O PREÇO de cada item (procure valores em R$, US$, ou qualquer formato monetário no HTML e no texto)
+- A QUANTIDADE (procure por "1 Adulto", "2 Crianças", qtd, etc)
+- A DATA de uso/viagem
 
 Para cada item, identifique:
-- Tipo de serviço (hotel, flight, transfer, tour, insurance, ticket, other) - ingressos de parques devem ser "ticket", passeios devem ser "tour"
-- Nome/descrição do produto
-- Data de uso (formato YYYY-MM-DD se disponível)
-- Valor unitário em reais (número decimal) - procure por preços. Se não encontrar, use 0.
-- Quantidade de adultos e crianças (separe como itens distintos se tiver preços diferentes)
+- Tipo de serviço (hotel, flight, transfer, tour, insurance, ticket, other) - ingressos de parques = "ticket", passeios = "tour"
+- Nome/descrição completa do produto
+- Data de uso (formato YYYY-MM-DD). Se a data estiver em formato DD/MM/YYYY, converta.
+- Valor unitário em reais (número decimal). Procure por: preços no carrinho, valores de checkout, totais parciais. Se houver preço em USD, converta usando cotação R$ 5,40.
+- Quantidade (número de adultos + crianças como itens separados se preços diferentes)
+- Observações: inclua detalhes como "adulto", "criança", dias de validade, etc.
+
+IMPORTANTE: 
+- Se encontrar preços no HTML (tags com class contendo "price", "valor", "total", "amount", data attributes de preço), extraia-os.
+- Procure por JSON embutido no HTML (tags <script> com dados do carrinho/produtos).
+- Se o texto colado pelo usuário mencionar produtos mas sem preço, extraia mesmo assim com unit_price = 0.
 
 ${contextContent}
 
