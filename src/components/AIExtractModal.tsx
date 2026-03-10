@@ -66,6 +66,63 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
     onClose();
   };
 
+  const enrichWithDatabasePrices = async (items: ExtractedItem[]): Promise<ExtractedItem[]> => {
+    try {
+      const { data: tickets } = await supabase
+        .from("ingressos_orlando")
+        .select("nome_ingresso, grupo, preco_adulto, preco_crianca, dias_validade, categoria");
+      
+      if (!tickets || tickets.length === 0) return items;
+
+      return items.map((item) => {
+        if (item.unit_price > 0) return item; // Already has a price
+        if (item.item_type !== "ticket") return item;
+
+        const desc = item.description.toLowerCase();
+        
+        // Try to find best matching ticket
+        let bestMatch = null;
+        let bestScore = 0;
+
+        for (const ticket of tickets) {
+          const name = ticket.nome_ingresso.toLowerCase();
+          const grupo = ticket.grupo.toLowerCase();
+          let score = 0;
+
+          // Check if key words from ticket name appear in description
+          const nameWords = name.split(/\s+/);
+          for (const word of nameWords) {
+            if (word.length > 2 && desc.includes(word)) score++;
+          }
+          // Bonus for group match
+          if (desc.includes(grupo)) score += 2;
+          // Bonus for exact name match
+          if (desc.includes(name)) score += 5;
+
+          if (score > bestScore) {
+            bestScore = score;
+            bestMatch = ticket;
+          }
+        }
+
+        if (bestMatch && bestScore >= 3 && bestMatch.preco_adulto) {
+          return {
+            ...item,
+            unit_price: Number(bestMatch.preco_adulto),
+            observations: [
+              item.observations,
+              `Preço ref. base: ${bestMatch.nome_ingresso}`,
+            ].filter(Boolean).join(" | "),
+          };
+        }
+
+        return item;
+      });
+    } catch {
+      return items;
+    }
+  };
+
   const extract = async () => {
     setExtracting(true);
     try {
