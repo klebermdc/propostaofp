@@ -547,3 +547,72 @@ export default function QuoteEditor() {
     </div>
   );
 }
+
+function HotelSelector({
+  hotels,
+  hotelCovers,
+  selectedHotelId,
+  onSelect,
+}: {
+  hotels: HotelOption[];
+  hotelCovers: Record<number, string>;
+  selectedHotelId: number | null;
+  onSelect: (hotelId: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = hotels.find((h) => h.id === selectedHotelId);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between h-9 text-sm">
+          {selected ? (
+            <div className="flex items-center gap-2 truncate">
+              <Hotel className="h-3.5 w-3.5 shrink-0 text-primary" />
+              <span className="truncate">{selected.nome_hotel}</span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{selected.regiao}</Badge>
+            </div>
+          ) : (
+            <span className="text-muted-foreground">Selecionar hotel cadastrado...</span>
+          )}
+          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Buscar hotel..." />
+          <CommandList>
+            <CommandEmpty>Nenhum hotel encontrado.</CommandEmpty>
+            <CommandGroup>
+              {hotels.map((hotel) => (
+                <CommandItem
+                  key={hotel.id}
+                  value={hotel.nome_hotel}
+                  onSelect={() => {
+                    onSelect(hotel.id);
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-3 py-2"
+                >
+                  <img
+                    src={hotelCovers[hotel.id] || "/placeholder.svg"}
+                    alt={hotel.nome_hotel}
+                    className="h-10 w-14 rounded object-cover shrink-0"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{hotel.nome_hotel}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {hotel.regiao} · {hotel.categoria} · Público BR: {hotel.publico_brasileiro}
+                    </p>
+                  </div>
+                  <Check className={cn("h-4 w-4 shrink-0", selectedHotelId === hotel.id ? "opacity-100" : "opacity-0")} />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
