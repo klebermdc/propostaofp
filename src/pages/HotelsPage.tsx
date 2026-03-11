@@ -31,7 +31,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Search, Hotel, LogOut, Pencil, Trash2, Download, ArrowLeft } from "lucide-react";
+import { Plus, Search, LogOut, Pencil, Trash2, Download, ArrowLeft } from "lucide-react";
+import { AppLogo } from "@/components/AppLogo";
 import { useToast } from "@/hooks/use-toast";
 
 type HotelOrlando = {
