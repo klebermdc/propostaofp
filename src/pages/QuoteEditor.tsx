@@ -574,6 +574,17 @@ export default function QuoteEditor() {
                               placeholder="Valor parcelado"
                               className="h-8 text-sm flex-1"
                             />
+                            <Input
+                              type="text"
+                              inputMode="decimal"
+                              value={(item.metadata as any)?.comissao_parcelado || ""}
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+                                updateItem(item.id, { metadata: { ...(item.metadata as any), comissao_parcelado: raw } as any });
+                              }}
+                              placeholder="% comissão"
+                              className="h-8 text-sm w-24"
+                            />
                           </div>
                         </div>
                       </div>
