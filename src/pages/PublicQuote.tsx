@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Plane, MessageCircle, Mail, Calendar, Sparkles, Star,
-  CheckCircle2, Clock, Shield, ArrowRight, Wand2,
+  CheckCircle2, Clock, Shield, ArrowRight, Wand2, X,
 } from "lucide-react";
 import { itemTypeConfig } from "@/lib/quote-item-types";
 import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDetails";
