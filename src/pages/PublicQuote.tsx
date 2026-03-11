@@ -528,28 +528,24 @@ export default function PublicQuote() {
                   </div>
 
                   <div className="flex flex-col gap-3 sm:flex-row sm:justify-center pt-2">
-                    {whatsappUrl && (
-                      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                        <Button asChild size="lg" className="gap-2 magic-gradient text-white glow-btn rounded-xl text-base px-8 h-13 font-semibold w-full sm:w-auto border-0">
-                          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                            <MessageCircle className="h-5 w-5" />
-                            Quero essa magia!
-                            <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                              <ArrowRight className="h-4 w-4" />
-                            </motion.span>
-                          </a>
-                        </Button>
-                      </motion.div>
-                    )}
-                    {quote.client_email && (
-                      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                        <Button asChild size="lg" className="gap-2 glass-card text-white hover:bg-white/10 rounded-xl text-base px-8 h-13 border-white/15 w-full sm:w-auto">
-                          <a href={`mailto:${quote.client_email}?subject=Proposta Mágica - ${quote.title}&body=Olá, quero fechar minha viagem mágica!`}>
-                            <Mail className="h-5 w-5" /> Enviar email
-                          </a>
-                        </Button>
-                      </motion.div>
-                    )}
+                    <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                      <Button asChild size="lg" className="gap-2 magic-gradient text-white glow-btn rounded-xl text-base px-8 h-13 font-semibold w-full sm:w-auto border-0">
+                        <a href={companyWhatsapp} target="_blank" rel="noopener noreferrer">
+                          <MessageCircle className="h-5 w-5" />
+                          Quero essa magia!
+                          <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                            <ArrowRight className="h-4 w-4" />
+                          </motion.span>
+                        </a>
+                      </Button>
+                    </motion.div>
+                    <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                      <Button asChild size="lg" className="gap-2 glass-card text-white hover:bg-white/10 rounded-xl text-base px-8 h-13 border-white/15 w-full sm:w-auto">
+                        <a href={`mailto:${companyEmail}?subject=Proposta Mágica - ${quote.title}&body=Olá, quero fechar minha viagem mágica!`}>
+                          <Mail className="h-5 w-5" /> Enviar email
+                        </a>
+                      </Button>
+                    </motion.div>
                   </div>
                 </div>
               </div>
