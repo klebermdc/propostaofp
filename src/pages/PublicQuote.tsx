@@ -581,9 +581,8 @@ export default function PublicQuote() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              <div className="flex items-center justify-center gap-2 text-white/30 text-sm">
-                <Plane className="h-4 w-4" />
-                <span className="font-display font-semibold">Orlando Fast Pass</span>
+              <div className="flex items-center justify-center">
+                <AppLogo size="sm" variant="light" className="opacity-30" />
               </div>
               <p className="text-white/15 text-xs mt-2">Transformando sonhos em realidade ✨</p>
             </motion.div>
