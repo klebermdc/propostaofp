@@ -466,29 +466,37 @@ export default function PublicQuote() {
 
                       <Separator className="bg-white/10" />
 
-                      {/* Main total */}
-                      <div className="text-center pt-2 pb-2">
-                        <p className="text-sm text-white/50 mb-2 uppercase tracking-widest font-medium">Investimento total</p>
+                      {/* Main total — two containers side by side */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 pb-2">
+                        {/* À Vista */}
                         <motion.div
-                          whileInView={{ scale: [0.7, 1.08, 1] }}
+                          className="rounded-2xl border border-accent/20 bg-accent/5 p-6 text-center"
+                          whileInView={{ scale: [0.9, 1] }}
                           viewport={{ once: true }}
-                          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                         >
-                          <p className="text-5xl sm:text-6xl font-display font-bold bg-gradient-to-r from-accent via-[hsl(40,100%,70%)] to-accent bg-clip-text text-transparent leading-none">
+                          <p className="text-xs text-white/50 uppercase tracking-widest font-medium mb-3">À Vista</p>
+                          <p className="text-3xl sm:text-4xl font-display font-bold bg-gradient-to-r from-accent via-[hsl(40,100%,70%)] to-accent bg-clip-text text-transparent leading-none">
                             R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                           </p>
                         </motion.div>
+
+                        {/* Parcelado */}
                         {quote.installment_count > 1 && total > 0 && (
-                          <motion.p
-                            className="mt-3 text-white/60 text-base"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
+                          <motion.div
+                            className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center"
+                            whileInView={{ scale: [0.9, 1] }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.5 }}
+                            transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
                           >
-                            ou <span className="font-semibold text-white text-lg">{quote.installment_count}x</span>{" "}
-                            de <span className="font-bold text-accent text-xl">R$ {(total / quote.installment_count).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                          </motion.p>
+                            <p className="text-xs text-white/50 uppercase tracking-widest font-medium mb-3">Parcelado</p>
+                            <p className="text-3xl sm:text-4xl font-display font-bold text-white leading-none">
+                              {quote.installment_count}x
+                            </p>
+                            <p className="mt-2 text-lg font-semibold text-accent">
+                              R$ {(total / quote.installment_count).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                            </p>
+                          </motion.div>
                         )}
                       </div>
                     </CardContent>
