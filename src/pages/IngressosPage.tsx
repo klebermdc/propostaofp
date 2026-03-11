@@ -138,9 +138,7 @@ export default function IngressosPage() {
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-              <Ticket className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <AppLogo size="sm" />
             <span className="font-display text-lg font-bold">Ingressos Orlando</span>
           </div>
           <Button variant="ghost" size="sm" onClick={signOut}>
