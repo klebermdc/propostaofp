@@ -52,6 +52,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [extracting, setExtracting] = useState(false);
   const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
+  const [totalAVista, setTotalAVista] = useState<number>(0);
   const [step, setStep] = useState<"input" | "preview">("input");
   const { toast } = useToast();
 
