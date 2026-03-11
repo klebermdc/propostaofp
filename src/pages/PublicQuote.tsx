@@ -587,6 +587,7 @@ export default function PublicQuote() {
                 <AppLogo size="sm" variant="light" className="opacity-30" />
               </div>
               <p className="text-white/15 text-xs mt-2">Transformando sonhos em realidade ✨</p>
+              <ReclameAquiSeal />
             </motion.div>
           </motion.div>
         )}
