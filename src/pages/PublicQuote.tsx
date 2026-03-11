@@ -117,6 +117,7 @@ export default function PublicQuote() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [showCadastur, setShowCadastur] = useState(false);
 
   useEffect(() => {
     if (shareToken) fetchQuote();
