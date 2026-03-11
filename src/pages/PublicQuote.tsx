@@ -264,7 +264,7 @@ export default function PublicQuote() {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center gap-2.5">
-                <AppLogo size="sm" variant="light" />
+                <AppLogo variant="light" className="h-24 w-auto" />
               </div>
               {quote.valid_until && (
                 <div className="flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs text-white/70">
