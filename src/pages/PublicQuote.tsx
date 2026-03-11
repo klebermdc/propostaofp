@@ -258,16 +258,17 @@ export default function PublicQuote() {
           <div className="mx-auto max-w-3xl">
             {/* Brand */}
             <motion.div
-              className="flex items-center justify-between mb-8"
+              className="flex flex-col items-center mb-10"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-center gap-2.5">
-                <AppLogo variant="light" className="h-72 w-auto" />
+              <div className="relative">
+                <AppLogo variant="light" className="h-28 sm:h-36 w-auto drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]" />
+                <div className="absolute -inset-4 bg-gradient-to-b from-white/5 to-transparent rounded-2xl blur-xl -z-10" />
               </div>
               {quote.valid_until && (
-                <div className="flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs text-white/70">
+                <div className="flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs text-white/70 mt-5">
                   <Clock className="h-3 w-3" />
                   Até {new Date(quote.valid_until).toLocaleDateString("pt-BR")}
                 </div>
