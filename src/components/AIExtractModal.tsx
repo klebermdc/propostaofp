@@ -62,6 +62,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
     setCartText("");
     setFile(null);
     setExtractedItems([]);
+    setTotalAVista(0);
     setStep("input");
     setExtracting(false);
   };
