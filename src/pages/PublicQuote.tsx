@@ -571,7 +571,7 @@ export default function PublicQuote() {
                 <p className="text-white/40 text-sm">Alguma dúvida? Estamos aqui!</p>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button asChild variant="outline" className="rounded-full border-accent/30 text-accent hover:bg-accent/10 px-6">
-                    <a href={whatsappUrl || whatsappGenericUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={companyWhatsapp} target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="h-4 w-4 mr-2" /> Tirar dúvidas
                     </a>
                   </Button>
