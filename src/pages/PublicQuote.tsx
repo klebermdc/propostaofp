@@ -15,6 +15,7 @@ import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDet
 import { AppLogo } from "@/components/AppLogo";
 import { ReclameAquiSeal } from "@/components/ReclameAquiSeal";
 import logoCadastur from "@/assets/logo-cadastur.png";
+import certificadoCadastur from "@/assets/certificado-cadastur.png";
 import type { Database } from "@/integrations/supabase/types";
 
 type Quote = Database["public"]["Tables"]["quotes"]["Row"];
