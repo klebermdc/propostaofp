@@ -438,11 +438,13 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
                     <div>
                       <Label className="text-xs">Valor (R$)</Label>
                       <Input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={item.unit_price}
-                        onChange={(e) => updateExtracted(index, { unit_price: parseFloat(e.target.value) || 0 })}
+                        type="text"
+                        inputMode="decimal"
+                        value={item.unit_price || ""}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+                          updateExtracted(index, { unit_price: parseFloat(raw) || 0 });
+                        }}
                         className="h-8 text-xs"
                       />
                     </div>
