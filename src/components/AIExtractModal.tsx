@@ -42,7 +42,7 @@ interface ExtractedItem {
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (items: Omit<QuoteItemInsert, "quote_id">[]) => void;
+  onConfirm: (items: Omit<QuoteItemInsert, "quote_id">[], totalAVista?: number) => void;
 }
 
 export function AIExtractModal({ open, onClose, onConfirm }: Props) {
