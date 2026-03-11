@@ -57,6 +57,7 @@ import {
 import { cn } from "@/lib/utils";
 import { itemTypeConfig, itemTypes } from "@/lib/quote-item-types";
 import { AIExtractModal } from "@/components/AIExtractModal";
+import { AppLogo } from "@/components/AppLogo";
 import type { Database } from "@/integrations/supabase/types";
 
 type Quote = Database["public"]["Tables"]["quotes"]["Row"];
@@ -322,6 +323,7 @@ export default function QuoteEditor() {
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
+          <AppLogo size="sm" />
           <div className="flex-1 min-w-0">
             <Input
               value={title}

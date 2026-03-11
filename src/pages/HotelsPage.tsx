@@ -31,7 +31,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Search, Hotel, LogOut, Pencil, Trash2, Download, ArrowLeft } from "lucide-react";
+import { Plus, Search, LogOut, Pencil, Trash2, Download, ArrowLeft, Hotel } from "lucide-react";
+import { AppLogo } from "@/components/AppLogo";
 import { useToast } from "@/hooks/use-toast";
 
 type HotelOrlando = {
@@ -172,9 +173,7 @@ export default function HotelsPage() {
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-              <Hotel className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <AppLogo size="sm" />
             <span className="font-display text-lg font-bold">Hotéis Orlando</span>
           </div>
           <Button variant="ghost" size="sm" onClick={signOut}>

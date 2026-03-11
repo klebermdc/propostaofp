@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { itemTypeConfig } from "@/lib/quote-item-types";
 import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDetails";
+import { AppLogo } from "@/components/AppLogo";
 import type { Database } from "@/integrations/supabase/types";
 
 type Quote = Database["public"]["Tables"]["quotes"]["Row"];
@@ -263,13 +264,7 @@ export default function PublicQuote() {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center gap-2.5">
-                <motion.div
-                  className="flex h-10 w-10 items-center justify-center rounded-xl magic-gradient shadow-lg"
-                  whileHover={{ rotate: 12, scale: 1.1 }}
-                >
-                  <Plane className="h-5 w-5 text-white" />
-                </motion.div>
-                <span className="font-display text-base font-bold text-white/90">Orlando Fast Pass</span>
+                <AppLogo size="sm" variant="light" />
               </div>
               {quote.valid_until && (
                 <div className="flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs text-white/70">
@@ -586,9 +581,8 @@ export default function PublicQuote() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              <div className="flex items-center justify-center gap-2 text-white/30 text-sm">
-                <Plane className="h-4 w-4" />
-                <span className="font-display font-semibold">Orlando Fast Pass</span>
+              <div className="flex items-center justify-center">
+                <AppLogo size="sm" variant="light" className="opacity-30" />
               </div>
               <p className="text-white/15 text-xs mt-2">Transformando sonhos em realidade ✨</p>
             </motion.div>
