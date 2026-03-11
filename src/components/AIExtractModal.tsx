@@ -224,6 +224,9 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
         // Try to match extracted items against the ingressos_orlando table to fill prices
         const enrichedItems = await enrichWithDatabase(data.items);
         setExtractedItems(enrichedItems);
+        if (data.total_a_vista && data.total_a_vista > 0) {
+          setTotalAVista(data.total_a_vista);
+        }
         setStep("preview");
       } else {
         toast({
