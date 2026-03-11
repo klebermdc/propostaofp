@@ -15,6 +15,7 @@ import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDet
 import { AppLogo } from "@/components/AppLogo";
 import { ReclameAquiSeal } from "@/components/ReclameAquiSeal";
 import logoCadastur from "@/assets/logo-cadastur.png";
+import certificadoCadastur from "@/assets/certificado-cadastur.png";
 import type { Database } from "@/integrations/supabase/types";
 
 type Quote = Database["public"]["Tables"]["quotes"]["Row"];
@@ -627,10 +628,10 @@ export default function PublicQuote() {
               >
                 <X className="h-5 w-5 text-white" />
               </button>
-              <iframe
-                src="/certificado-cadastur.pdf"
-                className="w-full h-[80vh] rounded-xl border border-white/10"
-                title="Certificado Cadastur"
+              <img
+                src={certificadoCadastur}
+                alt="Certificado Cadastur"
+                className="w-full rounded-xl border border-white/10"
               />
             </motion.div>
           </motion.div>
