@@ -628,10 +628,10 @@ export default function PublicQuote() {
               >
                 <X className="h-5 w-5 text-white" />
               </button>
-              <iframe
-                src="/certificado-cadastur.pdf"
-                className="w-full h-[80vh] rounded-xl border border-white/10"
-                title="Certificado Cadastur"
+              <img
+                src={certificadoCadastur}
+                alt="Certificado Cadastur"
+                className="w-full rounded-xl border border-white/10"
               />
             </motion.div>
           </motion.div>
