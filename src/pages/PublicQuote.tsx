@@ -589,15 +589,13 @@ export default function PublicQuote() {
               </div>
               <p className="text-white/15 text-xs mt-2">Transformando sonhos em realidade ✨</p>
               <div className="flex items-center justify-center gap-6 mt-4">
-                <a
-                  href="/certificado-cadastur.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => setShowCadastur(true)}
                   title="Ver Certificado Cadastur"
                   className="opacity-50 hover:opacity-100 transition-opacity"
                 >
                   <img src={logoCadastur} alt="Cadastur" className="h-10 w-auto" />
-                </a>
+                </button>
                 <ReclameAquiSeal />
               </div>
             </motion.div>
