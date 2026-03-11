@@ -91,6 +91,7 @@ IMPORTANTE:
 - Se encontrar preços no HTML (tags com class contendo "price", "valor", "total", "amount", data attributes de preço), extraia-os.
 - Procure por JSON embutido no HTML (tags <script> com dados do carrinho/produtos).
 - Se o texto colado pelo usuário mencionar produtos mas sem preço, extraia mesmo assim com unit_price = 0.
+- Se houver um TOTAL GERAL ou VALOR TOTAL do carrinho/pedido (geralmente é o valor com desconto / à vista), extraia-o no campo total_a_vista.
 
 ${contextContent}
 
@@ -174,6 +175,10 @@ Retorne os dados usando a função extract_items.`,
                     ],
                     additionalProperties: false,
                   },
+                },
+                total_a_vista: {
+                  type: "number",
+                  description: "Total geral do carrinho/pedido (valor à vista com desconto), se disponível. 0 se não encontrado.",
                 },
               },
               required: ["items"],

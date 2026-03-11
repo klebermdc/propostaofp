@@ -277,7 +277,7 @@ export default function QuoteEditor() {
   };
 
   const handleAIItems = useCallback(
-    async (extractedItems: Omit<QuoteItemInsert, "quote_id">[]) => {
+    async (extractedItems: Omit<QuoteItemInsert, "quote_id">[], totalAVista?: number) => {
       if (!id) return;
       const toInsert = extractedItems.map((item, i) => ({
         ...item,
@@ -289,12 +289,26 @@ export default function QuoteEditor() {
       if (error) {
         toast({ title: "Erro ao adicionar itens da IA", description: error.message, variant: "destructive" });
       } else if (data) {
-        setItems((prev) => [...prev, ...data]);
-        toast({ title: `${data.length} item(ns) adicionado(s) com sucesso!` });
+        const newItems = [...items, ...data];
+        setItems(newItems);
+
+        // If AI extracted a total à vista, calculate and apply discount
+        if (totalAVista && totalAVista > 0) {
+          const newSubtotal = newItems.reduce((acc, item) => acc + item.unit_price * item.quantity, 0);
+          if (newSubtotal > totalAVista) {
+            const newDiscount = Math.round((newSubtotal - totalAVista) * 100) / 100;
+            setDiscount(newDiscount);
+            toast({ title: `${data.length} item(ns) adicionado(s)`, description: `Desconto de R$ ${newDiscount.toFixed(2)} aplicado automaticamente (total à vista: R$ ${totalAVista.toFixed(2)})` });
+          } else {
+            toast({ title: `${data.length} item(ns) adicionado(s) com sucesso!` });
+          }
+        } else {
+          toast({ title: `${data.length} item(ns) adicionado(s) com sucesso!` });
+        }
       }
       setShowAI(false);
     },
-    [id, items.length, toast]
+    [id, items, toast]
   );
 
   const subtotal = items.reduce((acc, item) => acc + item.unit_price * item.quantity, 0);

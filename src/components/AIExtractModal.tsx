@@ -42,7 +42,7 @@ interface ExtractedItem {
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (items: Omit<QuoteItemInsert, "quote_id">[]) => void;
+  onConfirm: (items: Omit<QuoteItemInsert, "quote_id">[], totalAVista?: number) => void;
 }
 
 export function AIExtractModal({ open, onClose, onConfirm }: Props) {
@@ -52,6 +52,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [extracting, setExtracting] = useState(false);
   const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
+  const [totalAVista, setTotalAVista] = useState<number>(0);
   const [step, setStep] = useState<"input" | "preview">("input");
   const { toast } = useToast();
 
@@ -61,6 +62,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
     setCartText("");
     setFile(null);
     setExtractedItems([]);
+    setTotalAVista(0);
     setStep("input");
     setExtracting(false);
   };
@@ -222,6 +224,9 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
         // Try to match extracted items against the ingressos_orlando table to fill prices
         const enrichedItems = await enrichWithDatabase(data.items);
         setExtractedItems(enrichedItems);
+        if (data.total_a_vista && data.total_a_vista > 0) {
+          setTotalAVista(data.total_a_vista);
+        }
         setStep("preview");
       } else {
         toast({
@@ -262,7 +267,8 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
         quantity: item.quantity,
         observations: item.observations || null,
         metadata: item.metadata || null,
-      }))
+      })),
+      totalAVista > 0 ? totalAVista : undefined
     );
     reset();
   };
