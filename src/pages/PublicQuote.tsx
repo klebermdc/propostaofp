@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, useInView, AnimatePresence } from "framer-motion";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Plane, MessageCircle, Mail, Calendar, Sparkles, Star,
-  CheckCircle2, Clock, Shield, ArrowRight, Wand2,
+  CheckCircle2, Clock, Shield, ArrowRight, Wand2, X,
 } from "lucide-react";
 import { itemTypeConfig } from "@/lib/quote-item-types";
 import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDetails";
@@ -117,6 +117,7 @@ export default function PublicQuote() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [showCadastur, setShowCadastur] = useState(false);
 
   useEffect(() => {
     if (shareToken) fetchQuote();
@@ -589,17 +590,48 @@ export default function PublicQuote() {
               </div>
               <p className="text-white/15 text-xs mt-2">Transformando sonhos em realidade ✨</p>
               <div className="flex items-center justify-center gap-6 mt-4">
-                <a
-                  href="/certificado-cadastur.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => setShowCadastur(true)}
                   title="Ver Certificado Cadastur"
                   className="opacity-50 hover:opacity-100 transition-opacity"
                 >
                   <img src={logoCadastur} alt="Cadastur" className="h-10 w-auto" />
-                </a>
+                </button>
                 <ReclameAquiSeal />
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cadastur Certificate Modal */}
+      <AnimatePresence>
+        {showCadastur && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCadastur(false)}
+          >
+            <motion.div
+              className="relative max-w-2xl w-full"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowCadastur(false)}
+                className="absolute -top-3 -right-3 z-10 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+              <iframe
+                src="/certificado-cadastur.pdf"
+                className="w-full h-[80vh] rounded-xl border border-white/10"
+                title="Certificado Cadastur"
+              />
             </motion.div>
           </motion.div>
         )}
