@@ -267,7 +267,8 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
         quantity: item.quantity,
         observations: item.observations || null,
         metadata: item.metadata || null,
-      }))
+      })),
+      totalAVista > 0 ? totalAVista : undefined
     );
     reset();
   };
