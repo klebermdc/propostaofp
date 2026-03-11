@@ -13,6 +13,7 @@ import {
 import { itemTypeConfig } from "@/lib/quote-item-types";
 import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDetails";
 import { AppLogo } from "@/components/AppLogo";
+import { ReclameAquiSeal } from "@/components/ReclameAquiSeal";
 import type { Database } from "@/integrations/supabase/types";
 
 type Quote = Database["public"]["Tables"]["quotes"]["Row"];
@@ -586,6 +587,7 @@ export default function PublicQuote() {
                 <AppLogo size="sm" variant="light" className="opacity-30" />
               </div>
               <p className="text-white/15 text-xs mt-2">Transformando sonhos em realidade ✨</p>
+              <ReclameAquiSeal />
             </motion.div>
           </motion.div>
         )}
