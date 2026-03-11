@@ -323,6 +323,7 @@ export default function QuoteEditor() {
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
+          <AppLogo size="sm" />
           <div className="flex-1 min-w-0">
             <Input
               value={title}
