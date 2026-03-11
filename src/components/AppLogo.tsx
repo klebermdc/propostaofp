@@ -3,6 +3,7 @@ import logoBlack from "@/assets/logo-orlando-fastpass.png";
 interface AppLogoProps {
   className?: string;
   size?: "sm" | "md" | "lg";
+  variant?: "dark" | "light";
 }
 
 const sizeMap = {
@@ -11,12 +12,12 @@ const sizeMap = {
   lg: "h-14",
 };
 
-export function AppLogo({ className = "", size = "md" }: AppLogoProps) {
+export function AppLogo({ className = "", size = "md", variant = "dark" }: AppLogoProps) {
   return (
     <img
       src={logoBlack}
       alt="Orlando Fast Pass"
-      className={`${sizeMap[size]} w-auto object-contain ${className}`}
+      className={`${sizeMap[size]} w-auto object-contain ${variant === "light" ? "invert brightness-[2]" : ""} ${className}`}
     />
   );
 }
