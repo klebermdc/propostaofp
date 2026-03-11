@@ -463,11 +463,18 @@ export default function QuoteEditor() {
                       <div className="space-y-1">
                         <Label className="text-xs">Valor unitário (R$)</Label>
                         <Input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          value={item.unit_price}
-                          onChange={(e) => updateItem(item.id, { unit_price: parseFloat(e.target.value) || 0 })}
+                          type="text"
+                          inputMode="decimal"
+                          value={item.unit_price || ""}
+                          onChange={(e) => {
+                            const raw = e.target.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+                            updateItem(item.id, { unit_price: parseFloat(raw) || 0 });
+                          }}
+                          onBlur={(e) => {
+                            const raw = e.target.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+                            updateItem(item.id, { unit_price: parseFloat(raw) || 0 });
+                          }}
+                          placeholder="0.00"
                           className="h-8 text-sm"
                         />
                       </div>
