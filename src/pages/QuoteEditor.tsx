@@ -503,6 +503,70 @@ export default function QuoteEditor() {
                         />
                       </div>
                     </div>
+                    {/* Fornecedores - visível apenas para o consultor */}
+                    <div className="rounded-md border border-dashed border-muted-foreground/30 p-3 space-y-2 bg-muted/30">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Fornecedores (interno)</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Fornecedor à vista</Label>
+                          <div className="flex gap-2">
+                            <Select
+                              value={(item.metadata as any)?.fornecedor_avista || ""}
+                              onValueChange={(v) => updateItem(item.id, { metadata: { ...(item.metadata as any), fornecedor_avista: v } as any })}
+                            >
+                              <SelectTrigger className="w-20 h-8 text-sm">
+                                <SelectValue placeholder="—" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {["HD", "JT", "SC", "AZ", "TR"].map((f) => (
+                                  <SelectItem key={f} value={f}>{f}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              type="text"
+                              inputMode="decimal"
+                              value={(item.metadata as any)?.preco_avista || ""}
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+                                updateItem(item.id, { metadata: { ...(item.metadata as any), preco_avista: raw } as any });
+                              }}
+                              placeholder="Valor à vista"
+                              className="h-8 text-sm flex-1"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Fornecedor parcelado</Label>
+                          <div className="flex gap-2">
+                            <Select
+                              value={(item.metadata as any)?.fornecedor_parcelado || ""}
+                              onValueChange={(v) => updateItem(item.id, { metadata: { ...(item.metadata as any), fornecedor_parcelado: v } as any })}
+                            >
+                              <SelectTrigger className="w-20 h-8 text-sm">
+                                <SelectValue placeholder="—" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {["HD", "JT", "SC", "AZ", "TR"].map((f) => (
+                                  <SelectItem key={f} value={f}>{f}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              type="text"
+                              inputMode="decimal"
+                              value={(item.metadata as any)?.preco_parcelado || ""}
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+                                updateItem(item.id, { metadata: { ...(item.metadata as any), preco_parcelado: raw } as any });
+                              }}
+                              placeholder="Valor parcelado"
+                              className="h-8 text-sm flex-1"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <Textarea
                       value={item.observations || ""}
                       onChange={(e) => updateItem(item.id, { observations: e.target.value || null })}
