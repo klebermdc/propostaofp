@@ -264,13 +264,7 @@ export default function PublicQuote() {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center gap-2.5">
-                <motion.div
-                  className="flex h-10 w-10 items-center justify-center rounded-xl magic-gradient shadow-lg"
-                  whileHover={{ rotate: 12, scale: 1.1 }}
-                >
-                  <Plane className="h-5 w-5 text-white" />
-                </motion.div>
-                <span className="font-display text-base font-bold text-white/90">Orlando Fast Pass</span>
+                <AppLogo size="sm" variant="light" />
               </div>
               {quote.valid_until && (
                 <div className="flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs text-white/70">
