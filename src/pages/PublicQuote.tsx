@@ -495,6 +495,21 @@ export default function PublicQuote() {
                           </motion.div>
                         )}
                       </div>
+
+                      {/* Variação cambial + validade */}
+                      <div className="text-center space-y-1 pt-2">
+                        <p className="text-[11px] text-white/35 italic">
+                          * Os valores podem sofrer variação cambial até a data da contratação.
+                        </p>
+                        {quote.valid_until && (
+                          <p className="text-[11px] text-white/35">
+                            Proposta válida até{" "}
+                            <span className="text-accent/70 font-medium">
+                              {new Date(quote.valid_until).toLocaleDateString("pt-BR")}
+                            </span>
+                          </p>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
