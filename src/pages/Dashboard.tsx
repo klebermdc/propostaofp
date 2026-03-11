@@ -88,10 +88,7 @@ export default function Dashboard() {
       <header className="sticky top-0 z-40 border-b bg-card/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-              <Plane className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-display text-lg font-bold">Lovable Travel</span>
+            <AppLogo size="sm" />
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => navigate("/hotels")} className="gap-2">
