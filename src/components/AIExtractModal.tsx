@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,7 @@ interface ExtractedItem {
   unit_price: number;
   quantity: number;
   observations?: string | null;
+  metadata?: Record<string, any> | null;
 }
 
 interface Props {
@@ -68,54 +70,107 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
     onClose();
   };
 
-  const enrichWithDatabasePrices = async (items: ExtractedItem[]): Promise<ExtractedItem[]> => {
+  const enrichWithDatabase = async (items: ExtractedItem[]): Promise<ExtractedItem[]> => {
     try {
-      const { data: tickets } = await supabase
-        .from("ingressos_orlando")
-        .select("nome_ingresso, grupo, preco_adulto, preco_crianca, dias_validade, categoria");
-      
-      if (!tickets || tickets.length === 0) return items;
+      const [ticketsRes, hotelsRes] = await Promise.all([
+        supabase
+          .from("ingressos_orlando")
+          .select("nome_ingresso, grupo, preco_adulto, preco_crianca, dias_validade, categoria, id"),
+        supabase
+          .from("hoteis_orlando")
+          .select("id, nome_hotel, marca, regiao, categoria, cafe_da_manha_incluso, estacionamento_tipo, tipo_quarto_familia, publico_brasileiro, distancia_disney_km, distancia_universal_km"),
+      ]);
+
+      const tickets = ticketsRes.data || [];
+      const hotels = hotelsRes.data || [];
 
       return items.map((item) => {
-        if (item.unit_price > 0) return item; // Already has a price
-        if (item.item_type !== "ticket") return item;
+        // --- Hotel matching ---
+        if (item.item_type === "hotel" && hotels.length > 0) {
+          const desc = item.description.toLowerCase();
+          let bestMatch: (typeof hotels)[0] | null = null;
+          let bestScore = 0;
 
-        const desc = item.description.toLowerCase();
-        
-        // Try to find best matching ticket
-        let bestMatch = null;
-        let bestScore = 0;
+          for (const hotel of hotels) {
+            const name = hotel.nome_hotel.toLowerCase();
+            let score = 0;
 
-        for (const ticket of tickets) {
-          const name = ticket.nome_ingresso.toLowerCase();
-          const grupo = ticket.grupo.toLowerCase();
-          let score = 0;
+            // Exact name match
+            if (desc.includes(name)) {
+              score += 10;
+            } else {
+              // Word-by-word matching
+              const nameWords = name.split(/\s+/);
+              for (const word of nameWords) {
+                if (word.length > 2 && desc.includes(word)) score++;
+              }
+            }
+            // Brand match
+            if (hotel.marca && desc.includes(hotel.marca.toLowerCase())) score += 3;
 
-          // Check if key words from ticket name appear in description
-          const nameWords = name.split(/\s+/);
-          for (const word of nameWords) {
-            if (word.length > 2 && desc.includes(word)) score++;
+            if (score > bestScore) {
+              bestScore = score;
+              bestMatch = hotel;
+            }
           }
-          // Bonus for group match
-          if (desc.includes(grupo)) score += 2;
-          // Bonus for exact name match
-          if (desc.includes(name)) score += 5;
 
-          if (score > bestScore) {
-            bestScore = score;
-            bestMatch = ticket;
+          if (bestMatch && bestScore >= 3) {
+            const details = [
+              bestMatch.regiao && `Região: ${bestMatch.regiao}`,
+              bestMatch.categoria && `Categoria: ${bestMatch.categoria}`,
+              bestMatch.cafe_da_manha_incluso ? "Café da manhã incluso" : null,
+              bestMatch.estacionamento_tipo && `Estacionamento: ${bestMatch.estacionamento_tipo}`,
+              bestMatch.tipo_quarto_familia && `Quarto: ${bestMatch.tipo_quarto_familia}`,
+              bestMatch.distancia_disney_km != null && `Disney: ${bestMatch.distancia_disney_km}km`,
+              bestMatch.distancia_universal_km != null && `Universal: ${bestMatch.distancia_universal_km}km`,
+            ].filter(Boolean).join(" | ");
+
+            return {
+              ...item,
+              description: `${bestMatch.nome_hotel}${bestMatch.marca ? ` (${bestMatch.marca})` : ""}`,
+              observations: details,
+              metadata: { hotel_id: bestMatch.id, hotel_nome: bestMatch.nome_hotel },
+            };
           }
         }
 
-        if (bestMatch && bestScore >= 3 && bestMatch.preco_adulto) {
-          return {
-            ...item,
-            unit_price: Number(bestMatch.preco_adulto),
-            observations: [
-              item.observations,
-              `Preço ref. base: ${bestMatch.nome_ingresso}`,
-            ].filter(Boolean).join(" | "),
-          };
+        // --- Ticket matching ---
+        if (item.item_type === "ticket" && tickets.length > 0) {
+          if (item.unit_price > 0) return item;
+
+          const desc = item.description.toLowerCase();
+          let bestMatch: (typeof tickets)[0] | null = null;
+          let bestScore = 0;
+
+          for (const ticket of tickets) {
+            const name = ticket.nome_ingresso.toLowerCase();
+            const grupo = ticket.grupo.toLowerCase();
+            let score = 0;
+
+            const nameWords = name.split(/\s+/);
+            for (const word of nameWords) {
+              if (word.length > 2 && desc.includes(word)) score++;
+            }
+            if (desc.includes(grupo)) score += 2;
+            if (desc.includes(name)) score += 5;
+
+            if (score > bestScore) {
+              bestScore = score;
+              bestMatch = ticket;
+            }
+          }
+
+          if (bestMatch && bestScore >= 3 && bestMatch.preco_adulto) {
+            return {
+              ...item,
+              unit_price: Number(bestMatch.preco_adulto),
+              metadata: { ticket_id: bestMatch.id, ticket_nome: bestMatch.nome_ingresso },
+              observations: [
+                item.observations,
+                `Preço ref. base: ${bestMatch.nome_ingresso}`,
+              ].filter(Boolean).join(" | "),
+            };
+          }
         }
 
         return item;
@@ -165,7 +220,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
 
       if (data?.items && data.items.length > 0) {
         // Try to match extracted items against the ingressos_orlando table to fill prices
-        const enrichedItems = await enrichWithDatabasePrices(data.items);
+        const enrichedItems = await enrichWithDatabase(data.items);
         setExtractedItems(enrichedItems);
         setStep("preview");
       } else {
@@ -206,6 +261,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
         unit_price: item.unit_price,
         quantity: item.quantity,
         observations: item.observations || null,
+        metadata: item.metadata || null,
       }))
     );
     reset();
@@ -343,11 +399,23 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                  <Input
-                    value={item.description}
-                    onChange={(e) => updateExtracted(index, { description: e.target.value })}
-                    className="text-sm"
-                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={item.description}
+                      onChange={(e) => updateExtracted(index, { description: e.target.value })}
+                      className="text-sm"
+                    />
+                    {item.metadata?.hotel_id && (
+                      <Badge className="whitespace-nowrap gap-1 bg-green-500/10 text-green-600 border-green-500/30">
+                        <Check className="h-3 w-3" /> Base interna
+                      </Badge>
+                    )}
+                    {item.metadata?.ticket_id && (
+                      <Badge className="whitespace-nowrap gap-1 bg-blue-500/10 text-blue-600 border-blue-500/30">
+                        <Check className="h-3 w-3" /> Base interna
+                      </Badge>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     <div>
                       <Label className="text-xs">Início</Label>
