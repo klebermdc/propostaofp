@@ -13,6 +13,7 @@ import {
 import { itemTypeConfig } from "@/lib/quote-item-types";
 import { HotelDetails, type HotelData } from "@/components/public-quote/HotelDetails";
 import { AppLogo } from "@/components/AppLogo";
+import { ReclameAquiSeal } from "@/components/ReclameAquiSeal";
 import type { Database } from "@/integrations/supabase/types";
 
 type Quote = Database["public"]["Tables"]["quotes"]["Row"];
