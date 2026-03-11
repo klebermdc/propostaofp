@@ -598,11 +598,29 @@ export default function PublicQuote() {
                 <AppLogo size="sm" variant="light" className="opacity-30" />
               </div>
               <p className="text-white/15 text-xs mt-2">Transformando sonhos em realidade ✨</p>
-              <div className="flex items-center justify-center gap-6 mt-4">
+              <div className="flex items-center justify-center gap-5 mt-4">
+                <a
+                  href="https://www.instagram.com/orlando.fastpass/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Siga-nos no Instagram"
+                  className="opacity-40 hover:opacity-100 transition-opacity"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                </a>
+                <a
+                  href="https://wa.me/551151984190"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Fale conosco no WhatsApp"
+                  className="opacity-40 hover:opacity-100 transition-opacity"
+                >
+                  <MessageCircle className="h-[22px] w-[22px] text-white" />
+                </a>
                 <button
                   onClick={() => setShowCadastur(true)}
                   title="Ver Certificado Cadastur"
-                  className="opacity-50 hover:opacity-100 transition-opacity"
+                  className="opacity-40 hover:opacity-100 transition-opacity"
                 >
                   <img src={logoCadastur} alt="Cadastur" className="h-10 w-auto" />
                 </button>
