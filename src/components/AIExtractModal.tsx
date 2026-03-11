@@ -35,6 +35,7 @@ interface ExtractedItem {
   unit_price: number;
   quantity: number;
   observations?: string | null;
+  metadata?: Record<string, any> | null;
 }
 
 interface Props {
