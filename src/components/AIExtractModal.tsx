@@ -398,11 +398,23 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                  <Input
-                    value={item.description}
-                    onChange={(e) => updateExtracted(index, { description: e.target.value })}
-                    className="text-sm"
-                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={item.description}
+                      onChange={(e) => updateExtracted(index, { description: e.target.value })}
+                      className="text-sm"
+                    />
+                    {item.metadata?.hotel_id && (
+                      <Badge className="whitespace-nowrap gap-1 bg-green-500/10 text-green-600 border-green-500/30">
+                        <Check className="h-3 w-3" /> Base interna
+                      </Badge>
+                    )}
+                    {item.metadata?.ticket_id && (
+                      <Badge className="whitespace-nowrap gap-1 bg-blue-500/10 text-blue-600 border-blue-500/30">
+                        <Check className="h-3 w-3" /> Base interna
+                      </Badge>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     <div>
                       <Label className="text-xs">Início</Label>
