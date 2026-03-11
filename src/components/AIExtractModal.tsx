@@ -260,6 +260,7 @@ export function AIExtractModal({ open, onClose, onConfirm }: Props) {
         unit_price: item.unit_price,
         quantity: item.quantity,
         observations: item.observations || null,
+        metadata: item.metadata || null,
       }))
     );
     reset();
