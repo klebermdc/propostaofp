@@ -225,14 +225,10 @@ export default function PublicQuote() {
     return acc;
   }, {} as Record<string, QuoteItem[]>);
 
-  const whatsappUrl = quote.client_phone
-    ? `https://wa.me/${quote.client_phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-        `Olá! Amei a proposta mágica "${quote.title}" e quero fechar! ✨🏰`
-      )}`
-    : null;
-  const whatsappGenericUrl = `https://wa.me/?text=${encodeURIComponent(
-    `Olá! Vi a proposta "${quote.title}" e quero saber mais!`
+  const companyWhatsapp = `https://wa.me/551151984190?text=${encodeURIComponent(
+    `Olá! Amei a proposta mágica "${quote.title}" e quero fechar! ✨🏰`
   )}`;
+  const companyEmail = "contato@orlandofastpass.com.br";
 
   return (
     <div className="min-h-screen bg-[hsl(220,30%,6%)] text-white overflow-hidden">
