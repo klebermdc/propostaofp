@@ -33,8 +33,14 @@ serve(async (req) => {
     const searchResults: string[] = [];
 
     if (FIRECRAWL_API_KEY) {
-      // Group items by type for targeted searches
-      const searchQueries = buildSearchQueries(items);
+      // Search specific competitor sites
+      const targetSites = [
+        "vmzviagens.com.br",
+        "tioorlando.com.br",
+        "decolar.com",
+        "booking.com",
+      ];
+      const searchQueries = buildSearchQueries(items, targetSites);
 
       const searchPromises = searchQueries.map(async (query) => {
         try {
@@ -49,7 +55,6 @@ serve(async (req) => {
               limit: 5,
               lang: "pt-BR",
               country: "BR",
-              tbs: "qdr:m", // Last month results
             }),
           });
 
