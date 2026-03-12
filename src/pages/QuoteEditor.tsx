@@ -53,10 +53,12 @@ import {
   Ticket,
   ChevronsUpDown,
   Check,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { itemTypeConfig, itemTypes } from "@/lib/quote-item-types";
 import { AIExtractModal } from "@/components/AIExtractModal";
+import { MarketAnalysisModal } from "@/components/MarketAnalysisModal";
 import { AppLogo } from "@/components/AppLogo";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -101,6 +103,7 @@ export default function QuoteEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showAI, setShowAI] = useState(false);
+  const [showMarketAnalysis, setShowMarketAnalysis] = useState(false);
   const [hotels, setHotels] = useState<HotelOption[]>([]);
   const [hotelCovers, setHotelCovers] = useState<Record<number, string>>({});
   const [tickets, setTickets] = useState<TicketOption[]>([]);
@@ -670,6 +673,19 @@ export default function QuoteEditor() {
                 <span>R$ {(total / installmentCount).toFixed(2)}</span>
               </div>
             )}
+            {items.length > 0 && (
+              <div className="mt-3 pt-3 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() => setShowMarketAnalysis(true)}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Analisar Preço de Mercado
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -726,6 +742,12 @@ export default function QuoteEditor() {
 
       {/* AI Modal */}
       <AIExtractModal open={showAI} onClose={() => setShowAI(false)} onConfirm={handleAIItems} />
+      <MarketAnalysisModal
+        open={showMarketAnalysis}
+        onClose={() => setShowMarketAnalysis(false)}
+        items={items}
+        total={total}
+      />
     </div>
   );
 }
