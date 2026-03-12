@@ -748,6 +748,7 @@ export default function QuoteEditor() {
         items={items}
         total={total}
       />
+    </div>
   );
 }
 
