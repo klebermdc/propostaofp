@@ -97,7 +97,7 @@ serve(async (req) => {
 
     // Step 3: AI analysis
     const prompt = `Você é um analista de mercado especializado em turismo para Orlando, FL.
-Analise o orçamento abaixo e compare com os preços praticados por agências brasileiras como CVC, Decolar, 123Milhas, ViajaNet, Hurb, Submarino Viagens, MaxMilhas.
+Analise o orçamento abaixo e compare com os preços praticados por agências brasileiras como VMZ Viagens, Tio Orlando, Decolar, Booking.com, CVC, ViajaNet, Hurb.
 
 ## Orçamento do cliente:
 ${itemsSummary}
