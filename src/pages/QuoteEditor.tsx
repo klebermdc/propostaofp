@@ -57,6 +57,7 @@ import {
 import { cn } from "@/lib/utils";
 import { itemTypeConfig, itemTypes } from "@/lib/quote-item-types";
 import { AIExtractModal } from "@/components/AIExtractModal";
+import { MarketAnalysisModal } from "@/components/MarketAnalysisModal";
 import { AppLogo } from "@/components/AppLogo";
 import type { Database } from "@/integrations/supabase/types";
 
