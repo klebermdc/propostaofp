@@ -33,8 +33,14 @@ serve(async (req) => {
     const searchResults: string[] = [];
 
     if (FIRECRAWL_API_KEY) {
-      // Group items by type for targeted searches
-      const searchQueries = buildSearchQueries(items);
+      // Search specific competitor sites
+      const targetSites = [
+        "vmzviagens.com.br",
+        "tioorlando.com.br",
+        "decolar.com",
+        "booking.com",
+      ];
+      const searchQueries = buildSearchQueries(items, targetSites);
 
       const searchPromises = searchQueries.map(async (query) => {
         try {
@@ -49,7 +55,6 @@ serve(async (req) => {
               limit: 5,
               lang: "pt-BR",
               country: "BR",
-              tbs: "qdr:m", // Last month results
             }),
           });
 
@@ -92,7 +97,7 @@ serve(async (req) => {
 
     // Step 3: AI analysis
     const prompt = `Você é um analista de mercado especializado em turismo para Orlando, FL.
-Analise o orçamento abaixo e compare com os preços praticados por agências brasileiras como CVC, Decolar, 123Milhas, ViajaNet, Hurb, Submarino Viagens, MaxMilhas.
+Analise o orçamento abaixo e compare com os preços praticados por agências brasileiras como VMZ Viagens, Tio Orlando, Decolar, Booking.com, CVC, ViajaNet, Hurb.
 
 ## Orçamento do cliente:
 ${itemsSummary}
@@ -172,41 +177,44 @@ Responda em português brasileiro. Seja direto e objetivo.`;
   }
 });
 
-function buildSearchQueries(items: QuoteItem[]): string[] {
+function buildSearchQueries(items: QuoteItem[], sites: string[]): string[] {
   const queries: string[] = [];
   const seen = new Set<string>();
 
   for (const item of items) {
-    let query = "";
+    if (seen.has(item.item_type + item.description)) continue;
+    seen.add(item.item_type + item.description);
+
+    let baseQuery = "";
     switch (item.item_type) {
       case "hotel":
-        query = `preço ${item.description} Orlando diária 2025 agência brasileira`;
+        baseQuery = `${item.description} Orlando diária preço`;
         break;
       case "ticket":
-        query = `ingresso ${item.description} Orlando preço reais 2025`;
+        baseQuery = `ingresso ${item.description} Orlando preço reais`;
         break;
       case "tour":
-        query = `passeio ${item.description} Orlando preço 2025`;
+        baseQuery = `passeio ${item.description} Orlando preço`;
         break;
       case "transfer":
-        query = `transfer aeroporto Orlando preço reais 2025`;
+        baseQuery = `transfer aeroporto Orlando preço`;
         break;
       case "insurance":
-        query = `seguro viagem Orlando preço 2025`;
+        baseQuery = `seguro viagem Orlando preço`;
         break;
       case "flight":
-        query = `passagem aérea Orlando preço 2025`;
+        baseQuery = `passagem aérea Orlando preço`;
         break;
       default:
-        query = `${item.description} Orlando preço 2025`;
+        baseQuery = `${item.description} Orlando preço`;
     }
 
-    if (!seen.has(item.item_type + item.description)) {
-      seen.add(item.item_type + item.description);
-      queries.push(query);
+    // Create site-specific searches
+    for (const site of sites) {
+      queries.push(`site:${site} ${baseQuery}`);
     }
   }
 
-  // Limit to 5 searches to avoid rate limits
-  return queries.slice(0, 5);
+  // Limit to 8 searches to balance coverage vs rate limits
+  return queries.slice(0, 8);
 }

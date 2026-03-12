@@ -79,7 +79,7 @@ export function MarketAnalysisModal({ open, onClose, items, total }: MarketAnaly
             Análise de Mercado
           </DialogTitle>
           <DialogDescription>
-            Compara os preços do seu orçamento com agências brasileiras (CVC, Decolar, 123Milhas, etc.)
+            Compara os preços do seu orçamento com VMZ Viagens, Tio Orlando, Decolar, Booking e outros
           </DialogDescription>
         </DialogHeader>
 
