@@ -673,6 +673,19 @@ export default function QuoteEditor() {
                 <span>R$ {(total / installmentCount).toFixed(2)}</span>
               </div>
             )}
+            {items.length > 0 && (
+              <div className="mt-3 pt-3 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() => setShowMarketAnalysis(true)}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Analisar Preço de Mercado
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
