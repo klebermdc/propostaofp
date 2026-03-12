@@ -742,7 +742,12 @@ export default function QuoteEditor() {
 
       {/* AI Modal */}
       <AIExtractModal open={showAI} onClose={() => setShowAI(false)} onConfirm={handleAIItems} />
-    </div>
+      <MarketAnalysisModal
+        open={showMarketAnalysis}
+        onClose={() => setShowMarketAnalysis(false)}
+        items={items}
+        total={total}
+      />
   );
 }
 
