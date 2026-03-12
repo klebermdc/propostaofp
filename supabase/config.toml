@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.search-hotel-images]
 verify_jwt = false
+
+[functions.analyze-market-price]
+verify_jwt = false

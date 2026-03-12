@@ -53,6 +53,7 @@ import {
   Ticket,
   ChevronsUpDown,
   Check,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { itemTypeConfig, itemTypes } from "@/lib/quote-item-types";
