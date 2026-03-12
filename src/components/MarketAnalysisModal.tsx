@@ -109,7 +109,7 @@ export function MarketAnalysisModal({ open, onClose, items, total }: MarketAnaly
         )}
 
         {analysis && (
-          <ScrollArea className="flex-1 min-h-0 h-[60vh]">
+          <div className="min-h-0 max-h-[60vh] overflow-y-auto pr-1">
             <div className="prose prose-sm max-w-none dark:prose-invert px-1 pb-4">
               {analysis.split("\n").map((line, i) => {
                 if (line.startsWith("# ")) {
@@ -135,7 +135,7 @@ export function MarketAnalysisModal({ open, onClose, items, total }: MarketAnaly
                 📊 Baseado em {sourcesCount} resultado(s) de pesquisa web + conhecimento de mercado da IA.
               </p>
             )}
-          </ScrollArea>
+          </div>
         )}
 
         {analysis && (
